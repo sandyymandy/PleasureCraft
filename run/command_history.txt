@@ -1,0 +1,6 @@
+/summon bia
+/summon
+/summon pleasurecraft:bia
+/kill @e[type=!minecraft:player]
+/summon
+/summon pleasurecraft:lucy

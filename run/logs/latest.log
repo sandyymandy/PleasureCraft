@@ -1,0 +1,129 @@
+[20:06:35] [main/INFO] (FabricLoader/GameProvider) Loading Minecraft 1.21.4 with Fabric Loader 0.16.14
+[20:06:35] [main/INFO] (FabricLoader) Loading 56 mods:
+	- fabric-api 0.119.3+1.21.4
+	- fabric-api-base 0.4.54+b47eab6b04
+	- fabric-api-lookup-api-v1 1.6.86+b1caf1e904
+	- fabric-biome-api-v1 15.0.6+b1c29d8e04
+	- fabric-block-api-v1 1.0.31+7feeb73304
+	- fabric-block-view-api-v2 1.0.20+9c49cc8c04
+	- fabric-blockrenderlayer-v1 2.0.8+7feeb73304
+	- fabric-client-gametest-api-v1 4.1.1+6816ccd404
+	- fabric-client-tags-api-v1 1.1.29+20ea1e2304
+	- fabric-command-api-v1 1.2.62+f71b366f04
+	- fabric-command-api-v2 2.2.41+e496eb1504
+	- fabric-commands-v0 0.2.79+df3654b304
+	- fabric-content-registries-v0 9.1.19+25d1a67604
+	- fabric-convention-tags-v1 2.1.20+7f945d5b04
+	- fabric-convention-tags-v2 2.14.1+aebda09404
+	- fabric-crash-report-info-v1 0.3.6+7feeb73304
+	- fabric-data-attachment-api-v1 1.6.2+e99da0f704
+	- fabric-data-generation-api-v1 22.3.1+0f4e5f5504
+	- fabric-dimensions-v1 4.0.10+7feeb73304
+	- fabric-entity-events-v1 2.0.15+62245bef04
+	- fabric-events-interaction-v0 4.0.4+a4eebcf004
+	- fabric-game-rule-api-v1 1.0.63+7d48d43904
+	- fabric-gametest-api-v1 2.0.26+7feeb73304
+	- fabric-item-api-v1 11.3.0+ee91fa1f04
+	- fabric-item-group-api-v1 4.2.2+fcb9601404
+	- fabric-key-binding-api-v1 1.0.57+7d48d43904
+	- fabric-keybindings-v0 0.2.55+df3654b304
+	- fabric-lifecycle-events-v1 2.5.4+bf2a60eb04
+	- fabric-loot-api-v2 3.0.38+3f89f5a504
+	- fabric-loot-api-v3 1.0.26+203e6b2304
+	- fabric-message-api-v1 6.0.26+238a33c004
+	- fabric-model-loading-api-v1 4.3.0+ae23723504
+	- fabric-networking-api-v1 4.4.0+db5e668204
+	- fabric-object-builder-api-v1 18.0.14+38b0d59804
+	- fabric-particles-v1 4.0.14+7feeb73304
+	- fabric-recipe-api-v1 8.1.1+640e77ae04
+	- fabric-registry-sync-v0 6.1.11+4a9c1ece04
+	- fabric-renderer-api-v1 5.0.3+50f0feb204
+	- fabric-renderer-indigo 2.0.3+50f0feb204
+	- fabric-rendering-data-attachment-v1 0.3.58+73761d2e04
+	- fabric-rendering-fluids-v1 3.1.19+7feeb73304
+	- fabric-rendering-v1 10.2.1+0d31b09f04
+	- fabric-resource-conditions-api-v1 5.0.13+203e6b2304
+	- fabric-resource-loader-v0 3.1.1+360374ac04
+	- fabric-screen-api-v1 2.0.38+7feeb73304
+	- fabric-screen-handler-api-v1 1.3.118+7feeb73304
+	- fabric-sound-api-v1 1.0.32+7feeb73304
+	- fabric-tag-api-v1 1.0.7+7d48d43904
+	- fabric-transfer-api-v1 5.4.9+efa825c904
+	- fabric-transitive-access-wideners-v1 6.3.2+56e78b9b04
+	- fabricloader 0.16.14
+	- geckolib 4.8.4
+	- java 21
+	- minecraft 1.21.4
+	- mixinextras 0.4.1
+	- pleasurecraft 1.0.0
+[20:06:35] [main/INFO] (FabricLoader/Mixin) SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/C:/Users/Sandyy/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.5+mixin.0.8.7/22f9eb729e216a091673a574a5906dc1b9027fb3/sponge-mixin-0.15.5+mixin.0.8.7.jar Service=Knot/Fabric Env=CLIENT
+[20:06:35] [main/INFO] (FabricLoader/Mixin) Loaded Fabric development mappings for mixin remapper!
+[20:06:35] [main/INFO] (FabricLoader/Mixin) Compatibility level set to JAVA_21
+[20:06:36] [main/INFO] (FabricLoader/MixinExtras|Service) Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.4.1).
+[20:06:37] [Datafixer Bootstrap/INFO] (Minecraft) 243 Datafixer optimizations took 424 milliseconds
+[20:06:41] [Render thread/INFO] (Minecraft) Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[20:06:42] [Render thread/INFO] (Minecraft) Setting user: Player17
+[20:06:42] [Render thread/INFO] (PleasureCraft) Registering Item Groups for pleasurecraft
+[20:06:42] [Render thread/INFO] (Indigo) [Indigo] Registering Indigo renderer!
+[20:06:42] [Render thread/INFO] (Minecraft) Backend library: LWJGL version 3.3.3-snapshot
+[20:06:43] [Render thread/INFO] (Minecraft) Reloading ResourceManager: vanilla, fabric, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-view-api-v2, fabric-blockrenderlayer-v1, fabric-client-gametest-api-v1, fabric-client-tags-api-v1, fabric-command-api-v1, fabric-command-api-v2, fabric-commands-v0, fabric-content-registries-v0, fabric-convention-tags-v1, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-gametest-api-v1, fabric-item-api-v1, fabric-item-group-api-v1, fabric-key-binding-api-v1, fabric-keybindings-v0, fabric-lifecycle-events-v1, fabric-loot-api-v2, fabric-loot-api-v3, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-data-attachment-v1, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-screen-api-v1, fabric-screen-handler-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader, pleasurecraft
+[20:06:43] [Worker-Main-1/INFO] (Minecraft) Found unifont_jp_patch-16.0.01.hex, loading
+[20:06:43] [Worker-Main-13/INFO] (Minecraft) Found unifont_all_no_pua-16.0.01.hex, loading
+[20:06:44] [Render thread/WARN] (Minecraft) Skipped language file: pleasurecraft:lang/en_us.json (com.google.gson.JsonSyntaxException: com.google.gson.stream.MalformedJsonException: Expected name at line 17 column 2 path $.itemgroup.pleasurecraft.pleasure_craft_items
+See https://github.com/google/gson/blob/main/Troubleshooting.md#malformed-json)
+[20:06:44] [Render thread/INFO] (Minecraft) OpenAL initialized on device OpenAL Soft on Speakers (High Definition Audio Device)
+[20:06:44] [Render thread/INFO] (Minecraft) Sound engine started
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 1024x512x4 minecraft:textures/atlas/blocks.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 2048x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 64x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[20:06:44] [Render thread/WARN] (FabricLoader/Mixin) Error loading class: net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer (java.lang.ClassNotFoundException: net/minecraft/client/renderer/entity/layers/HumanoidArmorLayer)
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 256x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[20:06:44] [Render thread/INFO] (Minecraft) Created: 1024x512x0 minecraft:textures/atlas/gui.png-atlas
+[20:08:14] [Render thread/INFO] (Minecraft) Loaded 1370 recipes
+[20:08:15] [Render thread/INFO] (Minecraft) Loaded 1481 advancements
+[20:08:15] [Render thread/INFO] (BiomeModificationImpl) Applied 0 biome modifications to 0 of 65 new biomes in 826.1 μs
+[20:08:15] [Server thread/INFO] (Minecraft) Starting integrated minecraft server version 1.21.4
+[20:08:15] [Server thread/INFO] (Minecraft) Generating keypair
+[20:08:15] [Server thread/INFO] (Minecraft) Preparing start region for dimension minecraft:overworld
+[20:08:15] [Render thread/INFO] (Minecraft) Preparing spawn area: 0%
+[20:08:15] [Render thread/INFO] (Minecraft) Time elapsed: 273 ms
+[20:08:15] [Server thread/INFO] (Minecraft) Changing view distance to 12, from 10
+[20:08:15] [Server thread/INFO] (Minecraft) Changing simulation distance to 12, from 0
+[20:08:16] [Server thread/INFO] (Minecraft) Player17[local:E:409d5b63] logged in with entity id 7 at (11.23246456809588, -60.0, 35.569768932604866)
+[20:08:16] [Server thread/INFO] (Minecraft) Player17 joined the game
+[20:08:16] [Server thread/INFO] (Minecraft) Player17 has made the advancement [Cover Me with Diamonds]
+[20:08:16] [Render thread/INFO] (Minecraft) [System] [CHAT] Player17 has made the advancement [Cover Me with Diamonds]
+[20:08:16] [Render thread/INFO] (Minecraft) Loaded 13 advancements
+[20:08:17] [Server thread/INFO] (Minecraft) Saving and pausing game...
+[20:08:17] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[20:08:17] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[20:08:17] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[20:08:20] [Render thread/WARN] (GeckoLib) Sound Keyframe found for LucyEntity -> controller, but no keyframe handler registered
+[20:08:27] [Render thread/WARN] (GeckoLib) Sound Keyframe found for LucyEntity -> controller, but no keyframe handler registered
+[20:08:27] [Server thread/INFO] (Minecraft) Saving and pausing game...
+[20:08:27] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[20:08:27] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[20:08:27] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[20:08:27] [Server thread/INFO] (Minecraft) Player17 lost connection: Disconnected
+[20:08:27] [Server thread/INFO] (Minecraft) Player17 left the game
+[20:08:27] [Server thread/INFO] (Minecraft) Stopping singleplayer server as player logged out
+[20:08:28] [Server thread/INFO] (Minecraft) Stopping server
+[20:08:28] [Server thread/INFO] (Minecraft) Saving players
+[20:08:28] [Server thread/INFO] (Minecraft) Saving worlds
+[20:08:28] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:overworld
+[20:08:28] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_end
+[20:08:28] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[New World]'/minecraft:the_nether
+[20:08:28] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (New World): All chunks are saved
+[20:08:28] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[20:08:28] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[20:08:28] [Server thread/INFO] (Minecraft) ThreadedAnvilChunkStorage: All dimensions are saved
+[20:08:28] [Render thread/INFO] (Minecraft) Stopping!

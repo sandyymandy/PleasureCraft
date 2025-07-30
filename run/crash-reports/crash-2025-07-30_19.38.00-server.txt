@@ -1,0 +1,220 @@
+---- Minecraft Crash Report ----
+// Don't do that.
+
+Time: 2025-07-30 19:38:00
+Description: Ticking entity
+
+java.lang.IllegalArgumentException: Can't find attribute minecraft:tempt_range
+	at knot//net.minecraft.entity.attribute.DefaultAttributeContainer.require(DefaultAttributeContainer.java:20)
+	at knot//net.minecraft.entity.attribute.DefaultAttributeContainer.getValue(DefaultAttributeContainer.java:27)
+	at knot//net.minecraft.entity.attribute.AttributeContainer.getValue(AttributeContainer.java:70)
+	at knot//net.minecraft.entity.LivingEntity.getAttributeValue(LivingEntity.java:2079)
+	at knot//net.minecraft.entity.ai.goal.TemptGoal.canStart(TemptGoal.java:45)
+	at knot//net.minecraft.entity.ai.goal.PrioritizedGoal.canStart(PrioritizedGoal.java:22)
+	at knot//net.minecraft.entity.ai.goal.GoalSelector.tick(GoalSelector.java:100)
+	at knot//net.minecraft.entity.mob.MobEntity.tickNewAi(MobEntity.java:790)
+	at knot//net.minecraft.entity.LivingEntity.tickMovement(LivingEntity.java:2876)
+	at knot//net.minecraft.entity.mob.MobEntity.tickMovement(MobEntity.java:574)
+	at knot//net.minecraft.entity.passive.PassiveEntity.tickMovement(PassiveEntity.java:127)
+	at knot//net.minecraft.entity.passive.AnimalEntity.tickMovement(AnimalEntity.java:64)
+	at knot//com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity.tickMovement(AbstractGirlEntity.java:354)
+	at knot//net.minecraft.entity.LivingEntity.tick(LivingEntity.java:2594)
+	at knot//net.minecraft.entity.mob.MobEntity.tick(MobEntity.java:379)
+	at knot//com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity.tick(AbstractGirlEntity.java:563)
+	at knot//net.minecraft.server.world.ServerWorld.tickEntity(ServerWorld.java:789)
+	at knot//net.minecraft.world.World.tickEntity(World.java:551)
+	at knot//net.minecraft.server.world.ServerWorld.method_31420(ServerWorld.java:429)
+	at knot//net.minecraft.world.EntityList.forEach(EntityList.java:76)
+	at knot//net.minecraft.server.world.ServerWorld.tick(ServerWorld.java:412)
+	at knot//net.minecraft.server.MinecraftServer.tickWorlds(MinecraftServer.java:1106)
+	at knot//net.minecraft.server.MinecraftServer.tick(MinecraftServer.java:998)
+	at knot//net.minecraft.server.integrated.IntegratedServer.tick(IntegratedServer.java:110)
+	at knot//net.minecraft.server.MinecraftServer.runServer(MinecraftServer.java:763)
+	at knot//net.minecraft.server.MinecraftServer.method_29739(MinecraftServer.java:299)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Thread: Server thread
+Stacktrace:
+	at knot//net.minecraft.entity.attribute.DefaultAttributeContainer.require(DefaultAttributeContainer.java:20)
+	at knot//net.minecraft.entity.attribute.DefaultAttributeContainer.getValue(DefaultAttributeContainer.java:27)
+	at knot//net.minecraft.entity.attribute.AttributeContainer.getValue(AttributeContainer.java:70)
+	at knot//net.minecraft.entity.LivingEntity.getAttributeValue(LivingEntity.java:2079)
+	at knot//net.minecraft.entity.ai.goal.TemptGoal.canStart(TemptGoal.java:45)
+	at knot//net.minecraft.entity.ai.goal.PrioritizedGoal.canStart(PrioritizedGoal.java:22)
+	at knot//net.minecraft.entity.ai.goal.GoalSelector.tick(GoalSelector.java:100)
+	at knot//net.minecraft.entity.mob.MobEntity.tickNewAi(MobEntity.java:790)
+	at knot//net.minecraft.entity.LivingEntity.tickMovement(LivingEntity.java:2876)
+	at knot//net.minecraft.entity.mob.MobEntity.tickMovement(MobEntity.java:574)
+	at knot//net.minecraft.entity.passive.PassiveEntity.tickMovement(PassiveEntity.java:127)
+	at knot//net.minecraft.entity.passive.AnimalEntity.tickMovement(AnimalEntity.java:64)
+	at knot//com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity.tickMovement(AbstractGirlEntity.java:354)
+	at knot//net.minecraft.entity.LivingEntity.tick(LivingEntity.java:2594)
+	at knot//net.minecraft.entity.mob.MobEntity.tick(MobEntity.java:379)
+	at knot//com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity.tick(AbstractGirlEntity.java:563)
+	at knot//net.minecraft.server.world.ServerWorld.tickEntity(ServerWorld.java:789)
+	at knot//net.minecraft.world.World.tickEntity(World.java:551)
+	at knot//net.minecraft.server.world.ServerWorld.method_31420(ServerWorld.java:429)
+	at knot//net.minecraft.world.EntityList.forEach(EntityList.java:76)
+
+-- Entity being ticked --
+Details:
+	Entity Type: pleasurecraft:bia (com.sandymandy.pleasurecraft.entity.bia.BiaEntity)
+	Entity ID: 42
+	Entity Name: entity.pleasurecraft.bia
+	Entity's Exact location: 14.22, -60.00, -3.65
+	Entity's Block location: World: (14,-60,-4), Section: (at 14,4,12 in 0,-4,-1; chunk contains blocks 0,-64,-16 to 15,319,-1), Region: (0,-1; contains chunks 0,-32 to 31,-1, blocks 0,-64,-512 to 511,319,-1)
+	Entity's Momentum: 0.00, 0.00, 0.00
+	Entity's Passengers: []
+	Entity's Vehicle: null
+Stacktrace:
+	at knot//net.minecraft.world.World.tickEntity(World.java:551)
+	at knot//net.minecraft.server.world.ServerWorld.method_31420(ServerWorld.java:429)
+	at knot//net.minecraft.world.EntityList.forEach(EntityList.java:76)
+	at knot//net.minecraft.server.world.ServerWorld.tick(ServerWorld.java:412)
+	at knot//net.minecraft.server.MinecraftServer.tickWorlds(MinecraftServer.java:1106)
+	at knot//net.minecraft.server.MinecraftServer.tick(MinecraftServer.java:998)
+	at knot//net.minecraft.server.integrated.IntegratedServer.tick(IntegratedServer.java:110)
+	at knot//net.minecraft.server.MinecraftServer.runServer(MinecraftServer.java:763)
+	at knot//net.minecraft.server.MinecraftServer.method_29739(MinecraftServer.java:299)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+-- Affected level --
+Details:
+	All players: 1 total; [ServerPlayerEntity['Player258'/1, l='ServerLevel[New World]', x=14.22, y=-60.00, z=-3.65]]
+	Chunk stats: 2601
+	Level dimension: minecraft:overworld
+	Level spawn location: World: (0,-60,0), Section: (at 0,4,0 in 0,-4,0; chunk contains blocks 0,-64,0 to 15,319,15), Region: (0,0; contains chunks 0,0 to 31,31, blocks 0,-64,0 to 511,319,511)
+	Level time: 925 game time, 925 day time
+	Level name: New World
+	Level game mode: Game mode: creative (ID 1). Hardcore: false. Commands: true
+	Level weather: Rain time: 136804 (now: false), thunder time: 110477 (now: false)
+	Known server brands: fabric
+	Removed feature flags: 
+	Level was modded: true
+	Level storage version: 0x04ABD - Anvil
+	Loaded entity count: 20
+Stacktrace:
+	at knot//net.minecraft.server.world.ServerWorld.addDetailsToCrashReport(ServerWorld.java:1959)
+	at knot//net.minecraft.server.MinecraftServer.tickWorlds(MinecraftServer.java:1109)
+	at knot//net.minecraft.server.MinecraftServer.tick(MinecraftServer.java:998)
+	at knot//net.minecraft.server.integrated.IntegratedServer.tick(IntegratedServer.java:110)
+	at knot//net.minecraft.server.MinecraftServer.runServer(MinecraftServer.java:763)
+	at knot//net.minecraft.server.MinecraftServer.method_29739(MinecraftServer.java:299)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+-- System Details --
+Details:
+	Minecraft Version: 1.21.4
+	Minecraft Version ID: 1.21.4
+	Operating System: Windows 11 (amd64) version 10.0
+	Java Version: 21.0.7, Eclipse Adoptium
+	Java VM Version: OpenJDK 64-Bit Server VM (mixed mode, sharing), Eclipse Adoptium
+	Memory: 380151008 bytes (362 MiB) / 939524096 bytes (896 MiB) up to 8355053568 bytes (7968 MiB)
+	CPUs: 16
+	Processor Vendor: AuthenticAMD
+	Processor Name: AMD Ryzen 7 7800X3D 8-Core Processor           
+	Identifier: AuthenticAMD Family 25 Model 97 Stepping 2
+	Microarchitecture: Zen 3
+	Frequency (GHz): 4.19
+	Number of physical packages: 1
+	Number of physical CPUs: 8
+	Number of logical CPUs: 16
+	Graphics card #0 name: AMD Radeon RX 9070 XT
+	Graphics card #0 vendor: Advanced Micro Devices, Inc.
+	Graphics card #0 VRAM (MiB): 16304.00
+	Graphics card #0 deviceId: VideoController1
+	Graphics card #0 versionInfo: 32.0.21013.4013
+	Graphics card #1 name: AMD Radeon(TM) Graphics
+	Graphics card #1 vendor: Advanced Micro Devices, Inc.
+	Graphics card #1 VRAM (MiB): 512.00
+	Graphics card #1 deviceId: VideoController2
+	Graphics card #1 versionInfo: 32.0.21013.4013
+	Memory slot #0 capacity (MiB): 16384.00
+	Memory slot #0 clockSpeed (GHz): 6.00
+	Memory slot #0 type: DDR5
+	Memory slot #1 capacity (MiB): 16384.00
+	Memory slot #1 clockSpeed (GHz): 6.00
+	Memory slot #1 type: DDR5
+	Virtual memory max (MiB): 72821.48
+	Virtual memory used (MiB): 55953.83
+	Swap memory total (MiB): 40960.00
+	Swap memory used (MiB): 2277.05
+	Space in storage for jna.tmpdir (MiB): <path not set>
+	Space in storage for org.lwjgl.system.SharedLibraryExtractPath (MiB): <path not set>
+	Space in storage for io.netty.native.workdir (MiB): <path not set>
+	Space in storage for java.io.tmpdir (MiB): available: 1514262.88, total: 1906148.00
+	Space in storage for workdir (MiB): available: 1514262.88, total: 1906148.00
+	JVM Flags: 0 total; 
+	Fabric Mods: 
+		fabric-api: Fabric API 0.119.3+1.21.4
+		fabric-api-base: Fabric API Base 0.4.54+b47eab6b04
+		fabric-api-lookup-api-v1: Fabric API Lookup API (v1) 1.6.86+b1caf1e904
+		fabric-biome-api-v1: Fabric Biome API (v1) 15.0.6+b1c29d8e04
+		fabric-block-api-v1: Fabric Block API (v1) 1.0.31+7feeb73304
+		fabric-block-view-api-v2: Fabric BlockView API (v2) 1.0.20+9c49cc8c04
+		fabric-blockrenderlayer-v1: Fabric BlockRenderLayer Registration (v1) 2.0.8+7feeb73304
+		fabric-client-gametest-api-v1: Fabric Client Game Test API (v1) 4.1.1+6816ccd404
+		fabric-client-tags-api-v1: Fabric Client Tags 1.1.29+20ea1e2304
+		fabric-command-api-v1: Fabric Command API (v1) 1.2.62+f71b366f04
+		fabric-command-api-v2: Fabric Command API (v2) 2.2.41+e496eb1504
+		fabric-commands-v0: Fabric Commands (v0) 0.2.79+df3654b304
+		fabric-content-registries-v0: Fabric Content Registries (v0) 9.1.19+25d1a67604
+		fabric-convention-tags-v1: Fabric Convention Tags 2.1.20+7f945d5b04
+		fabric-convention-tags-v2: Fabric Convention Tags (v2) 2.14.1+aebda09404
+		fabric-crash-report-info-v1: Fabric Crash Report Info (v1) 0.3.6+7feeb73304
+		fabric-data-attachment-api-v1: Fabric Data Attachment API (v1) 1.6.2+e99da0f704
+		fabric-data-generation-api-v1: Fabric Data Generation API (v1) 22.3.1+0f4e5f5504
+		fabric-dimensions-v1: Fabric Dimensions API (v1) 4.0.10+7feeb73304
+		fabric-entity-events-v1: Fabric Entity Events (v1) 2.0.15+62245bef04
+		fabric-events-interaction-v0: Fabric Events Interaction (v0) 4.0.4+a4eebcf004
+		fabric-game-rule-api-v1: Fabric Game Rule API (v1) 1.0.63+7d48d43904
+		fabric-gametest-api-v1: Fabric Game Test API (v1) 2.0.26+7feeb73304
+		fabric-item-api-v1: Fabric Item API (v1) 11.3.0+ee91fa1f04
+		fabric-item-group-api-v1: Fabric Item Group API (v1) 4.2.2+fcb9601404
+		fabric-key-binding-api-v1: Fabric Key Binding API (v1) 1.0.57+7d48d43904
+		fabric-keybindings-v0: Fabric Key Bindings (v0) 0.2.55+df3654b304
+		fabric-lifecycle-events-v1: Fabric Lifecycle Events (v1) 2.5.4+bf2a60eb04
+		fabric-loot-api-v2: Fabric Loot API (v2) 3.0.38+3f89f5a504
+		fabric-loot-api-v3: Fabric Loot API (v3) 1.0.26+203e6b2304
+		fabric-message-api-v1: Fabric Message API (v1) 6.0.26+238a33c004
+		fabric-model-loading-api-v1: Fabric Model Loading API (v1) 4.3.0+ae23723504
+		fabric-networking-api-v1: Fabric Networking API (v1) 4.4.0+db5e668204
+		fabric-object-builder-api-v1: Fabric Object Builder API (v1) 18.0.14+38b0d59804
+		fabric-particles-v1: Fabric Particles (v1) 4.0.14+7feeb73304
+		fabric-recipe-api-v1: Fabric Recipe API (v1) 8.1.1+640e77ae04
+		fabric-registry-sync-v0: Fabric Registry Sync (v0) 6.1.11+4a9c1ece04
+		fabric-renderer-api-v1: Fabric Renderer API (v1) 5.0.3+50f0feb204
+		fabric-renderer-indigo: Fabric Renderer - Indigo 2.0.3+50f0feb204
+		fabric-rendering-data-attachment-v1: Fabric Rendering Data Attachment (v1) 0.3.58+73761d2e04
+		fabric-rendering-fluids-v1: Fabric Rendering Fluids (v1) 3.1.19+7feeb73304
+		fabric-rendering-v1: Fabric Rendering (v1) 10.2.1+0d31b09f04
+		fabric-resource-conditions-api-v1: Fabric Resource Conditions API (v1) 5.0.13+203e6b2304
+		fabric-resource-loader-v0: Fabric Resource Loader (v0) 3.1.1+360374ac04
+		fabric-screen-api-v1: Fabric Screen API (v1) 2.0.38+7feeb73304
+		fabric-screen-handler-api-v1: Fabric Screen Handler API (v1) 1.3.118+7feeb73304
+		fabric-sound-api-v1: Fabric Sound API (v1) 1.0.32+7feeb73304
+		fabric-tag-api-v1: Fabric Tag API (v1) 1.0.7+7d48d43904
+		fabric-transfer-api-v1: Fabric Transfer API (v1) 5.4.9+efa825c904
+		fabric-transitive-access-wideners-v1: Fabric Transitive Access Wideners (v1) 6.3.2+56e78b9b04
+		fabricloader: Fabric Loader 0.16.14
+		geckolib: GeckoLib 4 4.8.4
+		java: OpenJDK 64-Bit Server VM 21
+		minecraft: Minecraft 1.21.4
+		mixinextras: MixinExtras 0.4.1
+		pleasurecraft: PleasureCraft 1.0.0
+	Server Running: true
+	Player Count: 1 / 8; [ServerPlayerEntity['Player258'/1, l='ServerLevel[New World]', x=14.22, y=-60.00, z=-3.65]]
+	Active Data Packs: vanilla, fabric, fabric-convention-tags-v2, fabric-gametest-api-v1
+	Available Data Packs: fabric, fabric-convention-tags-v2, fabric-gametest-api-v1, minecart_improvements, redstone_experiments, trade_rebalance, vanilla
+	Enabled Feature Flags: minecraft:vanilla
+	World Generation: Stable
+	World Seed: -6270023297272473543
+	Suppressed Exceptions: ~~NONE~~
+	Type: Integrated Server (map_client.txt)
+	Is Modded: Definitely; Client brand changed to 'fabric'; Server brand changed to 'fabric'
+	Launched Version: Fabric

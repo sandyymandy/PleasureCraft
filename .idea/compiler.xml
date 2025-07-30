@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="21" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_STRING" value="&quot;-AoutRefMapFile=C:\Users\Sandyy\Documents\Idea Projects\PleasureCraft\build\classes\java\main\pleasurecraft-refmap.json&quot; -AdefaultObfuscationEnv=named:intermediary -Aquiet=true &quot;-AoutMapFileNamedIntermediary=C:\Users\Sandyy\Documents\Idea Projects\PleasureCraft\build\loom-cache\mixin-map-net.fabricmc.yarn.1_21_4.1.21.4+build.8-v2.main.tiny&quot; -AinMapFileNamedIntermediary=C:\Users\Sandyy\.gradle\caches\fabric-loom\1.21.4\net.fabricmc.yarn.1_21_4.1.21.4+build.8-v2\mappings.tiny" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="PleasureCraft.test" options="&quot;-AoutRefMapFile=C:\Users\Sandyy\Documents\Idea Projects\PleasureCraft\build\classes\java\test\test-pleasurecraft-refmap.json&quot; -AdefaultObfuscationEnv=named:intermediary -Aquiet=true &quot;-AoutMapFileNamedIntermediary=C:\Users\Sandyy\Documents\Idea Projects\PleasureCraft\build\loom-cache\mixin-map-net.fabricmc.yarn.1_21_4.1.21.4+build.8-v2.test.tiny&quot; -AinMapFileNamedIntermediary=C:\Users\Sandyy\.gradle\caches\fabric-loom\1.21.4\net.fabricmc.yarn.1_21_4.1.21.4+build.8-v2\mappings.tiny" />
+    </option>
+  </component>
+</project>
