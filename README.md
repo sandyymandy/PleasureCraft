@@ -53,10 +53,11 @@
 - [x] Freeze/Unfreeze system (prevents movement during scenes)
 - [x] Custom passenger position via model bone
 - [x] Configurable jiggle physics system
+- [x] Scene camera that follows animation bone
+
 
 ### Planned
 - [ ] Full scene interaction system with progress and climax stages
-- [ ] Scene camera that follows animation bone
 - [ ] Keybinds for advancing and exiting scenes
 - [ ] Player model integration with girl's scene pose
 - [ ] Armor and equipment rendering
@@ -69,8 +70,8 @@
 
 - [Fabric Loader](https://fabricmc.net/)
 - [Fabric API](https://modrinth.com/mod/fabric-api)
-- [GeckoLib 4.5.7](https://modrinth.com/mod/geckolib)
-- Minecraft **1.21.1**
+- [GeckoLib 4.8.4](https://modrinth.com/mod/geckolib)
+- Minecraft **1.21.4**
 
 ---
 

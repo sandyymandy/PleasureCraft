@@ -10,18 +10,18 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class ModItemGroups {
-//    public static final ItemGroup PLEASURE_CRAFT_ITEM_GROUP = Registry.register(Registries.ITEM_GROUP,
-//            Identifier.of(PleasureCraft.MOD_ID, "pleasure_craft_items"),
-//            FabricItemGroup.builder().icon(() -> new ItemStack(ModItems.LUCY_SPAWN_EGG))
-//                    .displayName(Text.translatable("itemgroup.pleasurecraft.pleasure_craft_items"))
-//                    .entries((displayContext, entries) -> {
-//                      entries.add(ModItems.LUCY_SPAWN_EGG);
-//                      entries.add(ModItems.BIA_SPAWN_EGG);
-//
-//
-//
-//
-//                    }).build());
+    public static final ItemGroup PLEASURE_CRAFT_ITEM_GROUP = Registry.register(Registries.ITEM_GROUP,
+            Identifier.of(PleasureCraft.MOD_ID, "pleasure_craft_items"),
+            FabricItemGroup.builder().icon(() -> new ItemStack(ModItems.LUCY_SPAWN_EGG))
+                    .displayName(Text.translatable("itemgroup.pleasurecraft.pleasure_craft_items"))
+                    .entries((displayContext, entries) -> {
+                      entries.add(ModItems.LUCY_SPAWN_EGG);
+                      entries.add(ModItems.BIA_SPAWN_EGG);
+
+
+
+
+                    }).build());
 
     /*public static final ItemGroup PLEASURE_CRAFT_ITEM_GROUP = Registry.register(Registries.ITEM_GROUP,
             Identifier.of(PleasureCraft.MOD_ID, "pleasure_craft_blocks"),

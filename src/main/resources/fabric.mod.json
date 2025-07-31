@@ -3,13 +3,13 @@
 	"id": "pleasurecraft",
 	"version": "${version}",
 	"name": "PleasureCraft",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "PleasureCraft is an adult-themed mod for Minecraft 1.21 and above made using the Fabric. It’s a full remake and modern reimagining of the old 1.12.2 FapCraft mod made by Schnurri_tv",
 	"authors": [
-		"Me!"
+		"SandyMandy"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/sandyymandy/PleasureCraft"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/pleasurecraft/icon.png",
@@ -30,7 +30,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.16.14",
-		"minecraft": "~1.21.3",
+		"minecraft": "~1.21.4",
 		"java": ">=21",
 		"fabric-api": "*"
 	},

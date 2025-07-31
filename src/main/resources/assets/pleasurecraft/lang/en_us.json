@@ -1,17 +1,14 @@
 {
-  "item.blockhard.lucy_spawn_egg": "Lucy Spawn Egg",
+  "item.pleasurecraft.lucy_spawn_egg": "Lucy Spawn Egg",
 
-  "item.blockhard.bia_spawn_egg": "Bia Spawn Egg",
+  "item.pleasurecraft.bia_spawn_egg": "Bia Spawn Egg",
 
-  "entity.blockhard.lucy": "Lucy",
+  "entity.pleasurecraft.lucy": "Lucy",
 
-  "entity.blockhard.bia": "Bia",
+  "entity.pleasurecraft.bia": "Bia",
 
-  "itemgroup.blockhard.block_hard_items": "Block Hard Items",
+  "screen.pleasurecraft.girl_inventory": "Inventory",
 
-  "screen.blockhard.girl_inventory": "Inventory",
-
-  "itemgroup.pleasurecraft.pleasure_craft_items": "PleasureCraft Items",
-
+  "itemgroup.pleasurecraft.pleasure_craft_items": "PleasureCraft Items"
 
 }

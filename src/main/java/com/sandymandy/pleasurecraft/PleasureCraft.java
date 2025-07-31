@@ -2,6 +2,7 @@ package com.sandymandy.pleasurecraft;
 
 import com.sandymandy.pleasurecraft.entity.EntityInit;
 import com.sandymandy.pleasurecraft.item.ModItemGroups;
+import com.sandymandy.pleasurecraft.item.ModItems;
 import com.sandymandy.pleasurecraft.screen.GirlInventoryScreenHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
@@ -30,7 +31,7 @@ public class PleasureCraft implements ModInitializer {
 	public void onInitialize() {
 		EntityInit.init();
 		ModItemGroups.registerItemGroups();
-//		ModItems.registerModItems();
+		ModItems.registerModItems();
 	}
 
 
