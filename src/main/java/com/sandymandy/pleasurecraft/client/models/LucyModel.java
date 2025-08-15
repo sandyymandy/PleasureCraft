@@ -1,8 +1,7 @@
-package com.sandymandy.pleasurecraft.entity.lucy.client;
+package com.sandymandy.pleasurecraft.client.models;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
-import com.sandymandy.pleasurecraft.util.entity.client.AbstractGirlModel;
-import com.sandymandy.pleasurecraft.entity.lucy.LucyEntity;
+import com.sandymandy.pleasurecraft.entity.girls.LucyEntity;
 import com.sandymandy.pleasurecraft.util.jigglePhysics.JiggleBoneConfig;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib.renderer.GeoRenderer;

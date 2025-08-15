@@ -1,6 +1,6 @@
-package com.sandymandy.pleasurecraft.util.entity.client;
+package com.sandymandy.pleasurecraft.client.models;
 
-import com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity;
+import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
 import com.sandymandy.pleasurecraft.util.jigglePhysics.JiggleBoneConfig;
 import com.sandymandy.pleasurecraft.util.jigglePhysics.JigglePhysics;
 import net.minecraft.client.MinecraftClient;

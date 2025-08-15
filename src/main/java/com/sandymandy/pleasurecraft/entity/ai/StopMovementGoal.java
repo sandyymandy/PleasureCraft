@@ -1,4 +1,4 @@
-package com.sandymandy.pleasurecraft.util.entity.ai;
+package com.sandymandy.pleasurecraft.entity.ai;
 
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.PathAwareEntity;

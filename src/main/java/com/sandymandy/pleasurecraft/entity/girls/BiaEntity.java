@@ -1,6 +1,5 @@
-package com.sandymandy.pleasurecraft.entity.bia;
+package com.sandymandy.pleasurecraft.entity.girls;
 
-import com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -17,7 +16,7 @@ public class BiaEntity extends AbstractGirlEntity{
 
     @Override
     protected Item getTameItem() {
-        return Items.ORANGE_TULIP;
+        return Items.OXEYE_DAISY;
     }
 
     @Override

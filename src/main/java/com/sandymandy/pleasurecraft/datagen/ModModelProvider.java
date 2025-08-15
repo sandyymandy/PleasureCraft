@@ -23,10 +23,6 @@ public class ModModelProvider extends FabricModelProvider {
 
     @Override
     public void generateItemModels(ItemModelGenerator itemModelGenerator) {
-        itemModelGenerator.register(ModItems.BIA_SPAWN_EGG,
-                new Model(Optional.of(Identifier.of(PleasureCraft.MOD_ID, "textures/items/bia_spawn_egg")), Optional.empty()));
-        itemModelGenerator.register(ModItems.LUCY_SPAWN_EGG,
-                new Model(Optional.of(Identifier.of(PleasureCraft.MOD_ID, "textures/items/lucy_spawn_egg")), Optional.empty()));
 
     }
 }

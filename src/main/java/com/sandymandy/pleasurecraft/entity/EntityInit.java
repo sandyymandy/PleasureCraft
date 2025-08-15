@@ -1,10 +1,10 @@
 package com.sandymandy.pleasurecraft.entity;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
-import com.sandymandy.pleasurecraft.entity.bia.BiaEntity;
-import com.sandymandy.pleasurecraft.entity.lucy.LucyEntity;
+import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
+import com.sandymandy.pleasurecraft.entity.girls.BiaEntity;
+import com.sandymandy.pleasurecraft.entity.girls.LucyEntity;
 import com.sandymandy.pleasurecraft.util.BonePosSyncPacket;
-import com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity;
 import com.sandymandy.pleasurecraft.util.network.ButtonPacket;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;

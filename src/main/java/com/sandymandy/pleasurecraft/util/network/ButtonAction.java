@@ -1,6 +1,6 @@
 package com.sandymandy.pleasurecraft.util.network;
 
-import com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity;
+import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 

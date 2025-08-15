@@ -1,7 +1,7 @@
-package com.sandymandy.pleasurecraft.entity.lucy.client;
+package com.sandymandy.pleasurecraft.client.renderers;
 
-import com.sandymandy.pleasurecraft.util.entity.client.AbstractGirlRenderer;
-import com.sandymandy.pleasurecraft.entity.lucy.LucyEntity;
+import com.sandymandy.pleasurecraft.client.models.LucyModel;
+import com.sandymandy.pleasurecraft.entity.girls.LucyEntity;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 
 public class LucyRenderer extends AbstractGirlRenderer<LucyEntity> {

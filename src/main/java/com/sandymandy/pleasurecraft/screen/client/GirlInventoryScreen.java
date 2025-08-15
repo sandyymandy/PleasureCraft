@@ -1,15 +1,13 @@
 package com.sandymandy.pleasurecraft.screen.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.sandymandy.pleasurecraft.PleasureCraft;
-import com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity;
+import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
 import com.sandymandy.pleasurecraft.screen.GirlInventoryScreenHandler;
 import com.sandymandy.pleasurecraft.util.network.ButtonAction;
 import com.sandymandy.pleasurecraft.util.network.ButtonRegistry;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

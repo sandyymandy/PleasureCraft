@@ -1,11 +1,11 @@
-package com.sandymandy.pleasurecraft.util.entity;
+package com.sandymandy.pleasurecraft.entity.girls;
 
 import com.sandymandy.pleasurecraft.scene.SceneStateManager;
 import com.sandymandy.pleasurecraft.screen.GirlScreenHandlerFactory;
 import com.sandymandy.pleasurecraft.util.BonePosSyncPacket;
 import com.sandymandy.pleasurecraft.util.GlobleMessages;
-import com.sandymandy.pleasurecraft.util.entity.ai.ConditionalGoal;
-import com.sandymandy.pleasurecraft.util.entity.ai.StopMovementGoal;
+import com.sandymandy.pleasurecraft.entity.ai.ConditionalGoal;
+import com.sandymandy.pleasurecraft.entity.ai.StopMovementGoal;
 import com.sandymandy.pleasurecraft.util.inventory.GirlInventory;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.Entity;
@@ -124,7 +124,6 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         this.goalSelector.add(6, new WanderAroundGoal(this, 1.0D));
         this.goalSelector.add(7, new ConditionalGoal(new LookAtEntityGoal(this, PlayerEntity.class, 6.0F),() -> !isFrozenInPlace()));
         this.goalSelector.add(8, new ConditionalGoal(new LookAroundGoal(this),() -> !isFrozenInPlace()));
-//        this.goalSelector.add(8, new LookAroundGoal(this));
         this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
         this.targetSelector.add(2, new AttackWithOwnerGoal(this));
         this.targetSelector.add(3, new RevengeGoal(this, PlayerEntity.class));

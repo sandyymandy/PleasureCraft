@@ -1,6 +1,6 @@
-package com.sandymandy.pleasurecraft.util.entity.client;
+package com.sandymandy.pleasurecraft.client.renderers;
 
-import com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity;
+import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -8,7 +8,6 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3d;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;

@@ -1,7 +1,7 @@
-package com.sandymandy.pleasurecraft.entity.bia.client;
+package com.sandymandy.pleasurecraft.client.renderers;
 
-import com.sandymandy.pleasurecraft.util.entity.client.AbstractGirlRenderer;
-import com.sandymandy.pleasurecraft.entity.bia.BiaEntity;
+import com.sandymandy.pleasurecraft.client.models.BiaModel;
+import com.sandymandy.pleasurecraft.entity.girls.BiaEntity;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 
 public class BiaRenderer extends AbstractGirlRenderer<BiaEntity> {

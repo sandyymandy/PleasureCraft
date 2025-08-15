@@ -2,8 +2,8 @@ package com.sandymandy.pleasurecraft;
 
 
 import com.sandymandy.pleasurecraft.entity.EntityInit;
-import com.sandymandy.pleasurecraft.entity.bia.client.BiaRenderer;
-import com.sandymandy.pleasurecraft.entity.lucy.client.LucyRenderer;
+import com.sandymandy.pleasurecraft.client.renderers.BiaRenderer;
+import com.sandymandy.pleasurecraft.client.renderers.LucyRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;

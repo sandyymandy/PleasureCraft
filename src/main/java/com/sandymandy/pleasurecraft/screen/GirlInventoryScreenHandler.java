@@ -1,7 +1,7 @@
 package com.sandymandy.pleasurecraft.screen;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
-import com.sandymandy.pleasurecraft.util.entity.AbstractGirlEntity;
+import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
 import com.sandymandy.pleasurecraft.util.inventory.slot.PublicArmorSlot;
 import com.sandymandy.pleasurecraft.util.inventory.GirlInventory;
 import net.minecraft.entity.Entity;
@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ArmorItem;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
