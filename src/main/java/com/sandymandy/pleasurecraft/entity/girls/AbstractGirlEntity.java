@@ -1,11 +1,13 @@
 package com.sandymandy.pleasurecraft.entity.girls;
 
+import com.sandymandy.pleasurecraft.PleasureCraft;
+import com.sandymandy.pleasurecraft.network.AnimationSyncPacket;
 import com.sandymandy.pleasurecraft.scene.SceneStateManager;
 import com.sandymandy.pleasurecraft.screen.GirlScreenHandlerFactory;
-import com.sandymandy.pleasurecraft.util.BonePosSyncPacket;
-import com.sandymandy.pleasurecraft.util.GlobleMessages;
+import com.sandymandy.pleasurecraft.network.BonePosSyncPacket;
 import com.sandymandy.pleasurecraft.entity.ai.ConditionalGoal;
 import com.sandymandy.pleasurecraft.entity.ai.StopMovementGoal;
+import com.sandymandy.pleasurecraft.util.Messages;
 import com.sandymandy.pleasurecraft.util.inventory.GirlInventory;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.Entity;
@@ -63,6 +65,8 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     private static final TrackedData<Boolean> STRIPPED = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> FOLLOWING = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> IN_SCENE = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> OVERRIDE_LOOP = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<String> OVERRIDE_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
     private final GirlInventory inventory = GirlInventory.ofSize();
     private BlockPos basePos;
     private LivingEntity attackTarget;
@@ -73,6 +77,8 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     private boolean freeze = false;
     public Vec3d clientPassengerBonePos = Vec3d.ZERO;;
     public Vec3d serverPassengerBonePos = Vec3d.ZERO;
+    private String currentAnimState = "idle";
+    private boolean currentLoopState = false;
     protected Item getTameItem() {
         return Items.DANDELION;
     }
@@ -94,6 +100,8 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     }
 
 
+
+
     protected AbstractGirlEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -105,6 +113,8 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         builder.add(STRIPPED, false);
         builder.add(FOLLOWING, false);
         builder.add(IN_SCENE, false);
+        builder.add(OVERRIDE_LOOP, false);
+        builder.add(OVERRIDE_ANIM,"");
     }
 
 
@@ -220,7 +230,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     }
 
     public boolean isStripped() {
-        return dataTracker.get(STRIPPED);
+        return this.dataTracker.get(STRIPPED);
     }
 
     public void setFreeze(boolean locked) {
@@ -232,12 +242,21 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     }
 
     public void setSceneState(boolean inScene) {
-        dataTracker.set(IN_SCENE, inScene);
+        this.dataTracker.set(IN_SCENE, inScene);
     }
 
     public boolean isSceneActive() {
-        return dataTracker.get(IN_SCENE);
+        return this.dataTracker.get(IN_SCENE);
     }
+
+    public void setOverrideAnim(String anim){
+        this.dataTracker.set(OVERRIDE_ANIM, anim);
+    }
+
+    public String getOverrideAnim(){
+        return this.dataTracker.get(OVERRIDE_ANIM);
+    }
+
 
 
     @Override
@@ -286,7 +305,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
                     : this.getBlockPos();
 
             // Send a message referencing whichever Pos we have
-            new GlobleMessages().GlobleMessage(
+            new Messages().GlobleMessage(
                     this.getWorld(),
                     getGirlDisplayName() + " died and respawned at base: " +
                             respawnPos.getX() + ", " +
@@ -304,7 +323,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         }
         else if(isFrozenInPlace() &! damageType.equals("outOfWorld") || damageType.equals("genericKill")){
             if(!this.hasPassengers()){
-                new GlobleMessages().GlobleMessage(
+                new Messages().GlobleMessage(
                         this.getWorld(),getGirlDisplayName() + " is busy at the moment");
             }
             return false;
@@ -436,79 +455,58 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     public boolean isBoneVisible(String boneName) {
         return boneVisibility.getOrDefault(boneName, true); // default to visible
     }
-
-
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "controller", 3, this::predicate)); // sets the transition length to the next animation as 3 in game ticks
+        controllerRegistrar.add(new AnimationController<>(this, "controller", 3, this::predicate));
     }
 
-    private <girlEntity extends GeoAnimatable> PlayState predicate(AnimationState<girlEntity> girlEntityAnimationState) {
 
-        AnimationController<?> controller = girlEntityAnimationState.getController();
+    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> state) {
+        AnimationController<?> controller = state.getController();
 
+        String defaultAnim = getDefaultAnimation(state);
+        String overrideAnim = this.getOverrideAnim();
+        boolean overrideLoop = this.dataTracker.get(OVERRIDE_LOOP);
 
-        // Handle override animation
-        if (overrideAnimation != null) {
-            controller.setAnimation(RawAnimation.begin().then(overrideAnimation, overrideLoop ? Animation.LoopType.LOOP : Animation.LoopType.PLAY_ONCE));
+        // 1. Forced animation override
+        if (overrideAnim != null && !overrideAnim.isEmpty()) {
+            this.currentAnimState = overrideAnim;
+            this.currentLoopState = overrideLoop;
 
-            // If it's not looping, clear it after one play
+            // End override if it was one-shot and finished playing
             if (!overrideLoop && controller.getAnimationState() == AnimationController.State.STOPPED) {
-                overrideAnimation = null;
-            }
-
-            return PlayState.CONTINUE;
-        }
-
-
-        if(!sceneManager.isInScene()){
-            if (!this.isOnGround() & !isSittingdown()) {
-                girlEntityAnimationState.getController().setAnimation(RawAnimation.begin().then("animation." + getGirlID() + ".fly", Animation.LoopType.LOOP));
-                return PlayState.CONTINUE;
-            }
-
-            if (girlEntityAnimationState.isMoving() & !isSittingdown()) {
-                girlEntityAnimationState.getController().setAnimation(RawAnimation.begin().then("animation." + getGirlID() + ".walk", Animation.LoopType.LOOP));
-                return PlayState.CONTINUE;
-            }
-
-            if (isSittingdown()) {
-                girlEntityAnimationState.getController().setAnimation(RawAnimation.begin().then("animation." + getGirlID() + ".sit", Animation.LoopType.LOOP));
-                return PlayState.CONTINUE;
-            }
-
-            girlEntityAnimationState.getController().setAnimation(RawAnimation.begin().then("animation."+ getGirlID() +".idle", Animation.LoopType.LOOP));
-            return PlayState.CONTINUE;
-        }
-        else{
-            if(this.getGirlID().equals("bia")){
-                girlEntityAnimationState.getController().setAnimation(RawAnimation.begin().then("animation." + getGirlID() + ".prone_doggy_soft", Animation.LoopType.LOOP));
-                return PlayState.CONTINUE;
-            }else {
-                girlEntityAnimationState.getController().setAnimation(RawAnimation.begin().then("animation." + getGirlID() + ".paizuri_fast", Animation.LoopType.LOOP));
-                return PlayState.CONTINUE;
+                stopOverrideAnimations();
             }
         }
+        else {
+            this.currentAnimState = defaultAnim;
+            this.currentLoopState = true;
+        }
 
-
-
-
+        controller.setAnimation(RawAnimation.begin().then
+                (getAnimationPath(this.currentAnimState), this.currentLoopState ? Animation.LoopType.LOOP : Animation.LoopType.PLAY_ONCE));
+        return PlayState.CONTINUE;
 
     }
 
-    public String overrideAnimation = null;
-    public boolean overrideLoop = false; // Used for forced one-shot animations (e.g., strip)
+    private String getDefaultAnimation(AnimationState<?> state) {
+        if (!this.isOnGround() && !isSittingdown()) return "fly";
+        if (state.isMoving() && !isSittingdown()) return "walk";
+        if (isSittingdown()) return "sit";
+        return "idle";
+    }
 
-
+    // Call this to force an animation
     public void playAnimation(String animationName, boolean loop) {
-        this.overrideAnimation = animationName;
-        this.overrideLoop = loop;
-
-/*        if (!this.getWorld().isClient) {
-            GirlAnimationSyncS2CPacket.send(this, animationName, loop);
-      }*/
+        if (!this.getWorld().isClient) { // run only on server
+            this.setOverrideAnim(animationName != null ? animationName : "");
+            this.dataTracker.set(OVERRIDE_LOOP, loop);
+        }
     }
 
+    public void stopOverrideAnimations() {
+        ClientPlayNetworking.send(new AnimationSyncPacket(this.getId(), ""));
+    }
 
 
     @Override
@@ -561,6 +559,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         previousYaw = getYaw();
         previousVelocity = getVelocity();
         clothingLogic();
+        PleasureCraft.LOGGER.info(this.dataTracker.get(OVERRIDE_ANIM));
 
 
     }
@@ -671,6 +670,27 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         } else {
             return "Unknown Item";
         }
+    }
+
+    public void messageAsEntity(String message){
+        this.messageAsEntity(null,message);
+    }
+
+    public void messageAsEntity(@Nullable PlayerEntity playerEntity, String message){
+        if(this.getWorld().isClient()) return;
+        String finalMessage = "<"+getGirlDisplayName()+"> " + message;
+
+        if(playerEntity == null){
+            new Messages().GlobleMessage(this.getWorld(), finalMessage);
+        }
+        else {
+            new Messages().PlayerSpecificMessage(playerEntity,finalMessage);
+        }
+
+    }
+
+    private String getAnimationPath(String animation){
+        return "animation." + this.getGirlID() + "." + animation;
     }
 
 

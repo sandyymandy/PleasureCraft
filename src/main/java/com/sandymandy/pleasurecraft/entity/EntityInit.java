@@ -4,8 +4,9 @@ import com.sandymandy.pleasurecraft.PleasureCraft;
 import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
 import com.sandymandy.pleasurecraft.entity.girls.BiaEntity;
 import com.sandymandy.pleasurecraft.entity.girls.LucyEntity;
-import com.sandymandy.pleasurecraft.util.BonePosSyncPacket;
-import com.sandymandy.pleasurecraft.util.network.ButtonPacket;
+import com.sandymandy.pleasurecraft.network.AnimationSyncPacket;
+import com.sandymandy.pleasurecraft.network.BonePosSyncPacket;
+import com.sandymandy.pleasurecraft.network.ButtonPacket;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -55,6 +56,9 @@ public class EntityInit {
 
         PayloadTypeRegistry.playC2S().register(BonePosSyncPacket.ID, BonePosSyncPacket.CODEC);
 
+        PayloadTypeRegistry.playC2S().register(AnimationSyncPacket.ID, AnimationSyncPacket.CODEC);
+
+
 
         ServerPlayNetworking.registerGlobalReceiver(ButtonPacket.ID,
                 (packet, context) -> Objects.requireNonNull(context.player().getServer()).execute(() -> {
@@ -64,7 +68,10 @@ public class EntityInit {
                             case "stripOrDressup" -> girl.setStripped(!girl.isStripped());
                             case "breakUp" -> girl.breakUp(context.player());
                             case "setBase" -> girl.setBasePosHere();
-                            case "talk" -> girl.getSceneManager().startScene(context.player());
+                            case "sex" -> girl.getSceneManager().startScene(context.player());
+                            case "talk" -> girl.messageAsEntity(context.player(),"Hello");
+                            case "testAnim1" -> girl.playAnimation("ride",true);
+                            case "testAnim2" -> girl.playAnimation("downed",false);
                             case "goToBase" -> girl.teleportToBase();
                             case "sit" -> girl.setSit(!girl.isSittingdown());
                             case "follow" -> girl.setFollowing(!girl.isFollowing());
@@ -83,6 +90,16 @@ public class EntityInit {
 
                 }
         ));
+
+        ServerPlayNetworking.registerGlobalReceiver(AnimationSyncPacket.ID,
+                (packet, context) -> Objects.requireNonNull(context.player().getServer()).execute(() -> {
+                            var entity = context.player().getWorld().getEntityById(packet.entityId());
+                            if (entity instanceof AbstractGirlEntity girl) {
+                                girl.setOverrideAnim(packet.animationState());
+                            }
+
+                        }
+                ));
 
     }
 }

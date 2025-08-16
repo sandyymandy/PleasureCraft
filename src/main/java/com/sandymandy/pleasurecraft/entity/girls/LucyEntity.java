@@ -29,7 +29,6 @@ public class LucyEntity extends AbstractGirlEntity{
         return "lucy";
     }
 
-
     public static DefaultAttributeContainer.Builder createAttributes() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.MAX_HEALTH, 20)

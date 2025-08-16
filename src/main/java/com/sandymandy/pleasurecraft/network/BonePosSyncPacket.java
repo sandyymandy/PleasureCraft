@@ -1,4 +1,4 @@
-package com.sandymandy.pleasurecraft.util;
+package com.sandymandy.pleasurecraft.network;
 
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -8,13 +8,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import com.sandymandy.pleasurecraft.PleasureCraft;
 
-import java.util.UUID;
-
 public record BonePosSyncPacket(int entityId, Vec3d position) implements CustomPayload {
     public static final Id<BonePosSyncPacket> ID = new Id<>(Identifier.of(PleasureCraft.MOD_ID, "sync_passenger_bone_pos"));
 
 
-    // Manual Vec3d codec
     public static final PacketCodec<RegistryByteBuf, Vec3d> VEC3D_CODEC = PacketCodec.of(
             (vec,buf) -> {
                 buf.writeDouble(vec.x);

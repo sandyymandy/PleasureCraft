@@ -1,4 +1,4 @@
-package com.sandymandy.pleasurecraft.util.network;
+package com.sandymandy.pleasurecraft.network;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.text.Text;
@@ -21,6 +21,10 @@ public class ButtonRegistry {
 
             new ButtonAction(Text.literal("Go To Base"), (girl, player) -> {
                 ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "goToBase"));
+            }),
+
+            new ButtonAction(Text.literal("Test Anim 1"), (girl, player) -> {
+                ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "testAnim1"));
             })
     );
 
@@ -29,12 +33,20 @@ public class ButtonRegistry {
                 ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "talk"));
             }),
 
+            new ButtonAction(Text.literal("Sex"), (girl, player) -> {
+                ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "sex"));
+            }),
+
             new ButtonAction(Text.literal("Sit"), (girl, player) -> {
                 ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "sit"));
             }),
 
             new ButtonAction(Text.literal("Follow Me"), (girl, player) -> {
                 ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "follow"));
+            }),
+
+            new ButtonAction(Text.literal("Test Anim 2"), (girl, player) -> {
+                ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "testAnim2"));
             })
     );
 }
