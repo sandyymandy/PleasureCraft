@@ -68,10 +68,10 @@ public class EntityInit {
                             case "stripOrDressup" -> girl.setStripped(!girl.isStripped());
                             case "breakUp" -> girl.breakUp(context.player());
                             case "setBase" -> girl.setBasePosHere();
-                            case "sex" -> girl.getSceneManager().startScene(context.player(),"paizuri_start","paizuri_slow","paizuri_fast","paizuri_cum");
+                            case "titjob" -> girl.getSceneManager().startScene(context.player(),"paizuri_start","paizuri_slow","paizuri_fast","paizuri_cum");
                             case "talk" -> girl.messageAsEntity(context.player(),"Hello");
-                            case "testAnim1" -> girl.playAnimation("ride",true);
-                            case "testAnim2" -> girl.playAnimation("downed",false);
+                            case "blowjob" -> girl.getSceneManager().startScene(context.player(),"blowjob_start","blowjob_slow","blowjob_fast","blowjob_cum");
+                            case "testAnim1" -> girl.playAnimation("downed",false);
                             case "goToBase" -> girl.teleportToBase();
                             case "sit" -> girl.setSit(!girl.isSittingdown());
                             case "follow" -> girl.setFollowing(!girl.isFollowing());

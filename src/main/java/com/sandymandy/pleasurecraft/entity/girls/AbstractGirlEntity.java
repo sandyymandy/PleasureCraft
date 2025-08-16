@@ -1,12 +1,11 @@
 package com.sandymandy.pleasurecraft.entity.girls;
 
-import com.sandymandy.pleasurecraft.PleasureCraft;
-import com.sandymandy.pleasurecraft.network.girls.AnimationSyncPacket;
-import com.sandymandy.pleasurecraft.scene.SceneStateManager;
-import com.sandymandy.pleasurecraft.screen.GirlScreenHandlerFactory;
-import com.sandymandy.pleasurecraft.network.girls.BonePosSyncPacket;
 import com.sandymandy.pleasurecraft.entity.ai.ConditionalGoal;
 import com.sandymandy.pleasurecraft.entity.ai.StopMovementGoal;
+import com.sandymandy.pleasurecraft.network.girls.AnimationSyncPacket;
+import com.sandymandy.pleasurecraft.network.girls.BonePosSyncPacket;
+import com.sandymandy.pleasurecraft.scene.SceneStateManager;
+import com.sandymandy.pleasurecraft.screen.GirlScreenHandlerFactory;
 import com.sandymandy.pleasurecraft.util.Messages;
 import com.sandymandy.pleasurecraft.util.inventory.GirlInventory;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -67,6 +66,10 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     private static final TrackedData<Boolean> IN_SCENE = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> OVERRIDE_LOOP = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<String> OVERRIDE_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
+    public static final TrackedData<String> INTRO_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
+    public static final TrackedData<String> SLOW_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
+    public static final TrackedData<String> FAST_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
+    public static final TrackedData<String> CUM_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
     private final GirlInventory inventory = GirlInventory.ofSize();
     private BlockPos basePos;
     private LivingEntity attackTarget;
@@ -115,6 +118,11 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         builder.add(IN_SCENE, false);
         builder.add(OVERRIDE_LOOP, false);
         builder.add(OVERRIDE_ANIM,"");
+        builder.add(INTRO_ANIM,"");
+        builder.add(SLOW_ANIM,"");
+        builder.add(FAST_ANIM,"");
+        builder.add(CUM_ANIM    ,"");
+
     }
 
 
@@ -419,11 +427,8 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         return success;
     }
 
-    public void toggleModelBones(String bones, boolean visible) {
-        toggleModelBones(bones, visible, false);
-    }
 
-    public void toggleModelBones(String bones, boolean visible, @Nullable boolean excludeChildren){
+    public void toggleModelBones(String bones, boolean visible){
         if(!getWorld().isClient){
             return;
         }
@@ -434,16 +439,9 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
             this.boneVisibility = new HashMap<>();
         }
 
-        if (this.boneVisibilityExcludeChildren == null){
-            this.boneVisibilityExcludeChildren = new HashMap<>();
-        }
 
         for (String boneName : boneArray) {
-            if(excludeChildren){
-                this.boneVisibilityExcludeChildren.put(boneName, visible);
-            }else {
-                this.boneVisibility.put(boneName, visible);
-            }
+            this.boneVisibility.put(boneName, visible);
         }
     }
 
@@ -465,11 +463,11 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     }
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "controller", 3, this::predicate));
+        controllerRegistrar.add(new AnimationController<>(this, "controller", 3, this::handleAnimations));
     }
 
 
-    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> state) {
+    private <T extends GeoAnimatable> PlayState handleAnimations(AnimationState<T> state) {
         AnimationController<?> controller = state.getController();
 
         String defaultAnim = getDefaultAnimation(state);
@@ -482,8 +480,10 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
             this.currentLoopState = overrideLoop;
 
             // End override if it was one-shot and finished playing
-            if (!overrideLoop && controller.getAnimationState() == AnimationController.State.PAUSED) {
-                this.getSceneManager().onAnimationFinished(this.currentAnimState);
+            if (!overrideLoop && (controller.getAnimationState() == AnimationController.State.STOPPED || controller.getAnimationState() == AnimationController.State.PAUSED)) {
+                if (isSceneActive()){this.getSceneManager().onAnimationFinished(this.currentAnimState);}
+                else {stopOverrideAnimations();}
+
             }
         }
         else {

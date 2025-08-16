@@ -23,8 +23,8 @@ public class ButtonRegistry {
                 ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "goToBase"));
             }),
 
-            new ButtonAction(Text.literal("Test Anim 1"), (girl, player) -> {
-                ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "testAnim1"));
+            new ButtonAction(Text.literal("Blow Job"), (girl, player) -> {
+                ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "blowjob"));
             })
     );
 
@@ -33,8 +33,8 @@ public class ButtonRegistry {
                 ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "talk"));
             }),
 
-            new ButtonAction(Text.literal("Sex"), (girl, player) -> {
-                ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "sex"));
+            new ButtonAction(Text.literal("Tit Job"), (girl, player) -> {
+                ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "titjob"));
             }),
 
             new ButtonAction(Text.literal("Sit"), (girl, player) -> {
@@ -45,8 +45,8 @@ public class ButtonRegistry {
                 ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "follow"));
             }),
 
-            new ButtonAction(Text.literal("Test Anim 2"), (girl, player) -> {
-                ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "testAnim2"));
+            new ButtonAction(Text.literal("Test Anim 1"), (girl, player) -> {
+                ClientPlayNetworking.send(new ButtonPacket(girl.getId(), "testAnim1"));
             })
     );
 }
