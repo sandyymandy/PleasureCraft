@@ -1,5 +1,6 @@
     package com.sandymandy.pleasurecraft.scene;
 
+    import com.sandymandy.pleasurecraft.PleasureCraft;
     import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
     import net.minecraft.entity.player.PlayerEntity;
 
@@ -116,9 +117,9 @@
 
     // Called by the entity when an animation finishes
     public void onAnimationFinished(String finishedAnim) {
-//        if (!inScene) return;
+        if (!inScene) return;
 
-        entity.messageAsEntity("sex");
+        PleasureCraft.LOGGER.info("Start -------------------------------________________________________---------------------------------------");
 
         switch (this.currentPhase) {
             case INTRO -> {

@@ -96,6 +96,7 @@ public class EntityInit {
                             var entity = context.player().getWorld().getEntityById(packet.entityId());
                             if (entity instanceof AbstractGirlEntity girl) {
                                 girl.setOverrideAnim(packet.animationState());
+                                girl.setOverrideLoop(packet.loopState());
                             }
 
                         }

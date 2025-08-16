@@ -7,7 +7,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
-public record AnimationSyncPacket(int entityId, String animationState) implements CustomPayload {
+public record AnimationSyncPacket(int entityId, String animationState, boolean loopState) implements CustomPayload {
 
     public static final Id<AnimationSyncPacket> ID = new Id<>(Identifier.of(PleasureCraft.MOD_ID, "sync_override_animation"));
 
@@ -15,6 +15,7 @@ public record AnimationSyncPacket(int entityId, String animationState) implement
             PacketCodec.tuple(
                     PacketCodecs.VAR_INT, AnimationSyncPacket::entityId,
                     PacketCodecs.STRING, AnimationSyncPacket::animationState,
+                    PacketCodecs.BOOLEAN, AnimationSyncPacket::loopState,
                     AnimationSyncPacket::new
             );
 

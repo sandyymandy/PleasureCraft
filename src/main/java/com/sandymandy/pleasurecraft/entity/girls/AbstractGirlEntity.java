@@ -1,5 +1,6 @@
 package com.sandymandy.pleasurecraft.entity.girls;
 
+import com.sandymandy.pleasurecraft.PleasureCraft;
 import com.sandymandy.pleasurecraft.network.girls.AnimationSyncPacket;
 import com.sandymandy.pleasurecraft.scene.SceneStateManager;
 import com.sandymandy.pleasurecraft.screen.GirlScreenHandlerFactory;
@@ -256,6 +257,14 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         return this.dataTracker.get(OVERRIDE_ANIM);
     }
 
+    public void setOverrideLoop(boolean loop){
+        this.dataTracker.set(OVERRIDE_LOOP, loop);
+    }
+
+    public boolean getOverrideLoop(){
+        return this.dataTracker.get(OVERRIDE_LOOP);
+    }
+
 
 
     @Override
@@ -465,7 +474,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
 
         String defaultAnim = getDefaultAnimation(state);
         String overrideAnim = this.getOverrideAnim();
-        boolean overrideLoop = this.dataTracker.get(OVERRIDE_LOOP);
+        boolean overrideLoop = this.getOverrideLoop();
 
         // 1. Forced animation override
         if (overrideAnim != null && !overrideAnim.isEmpty()) {
@@ -474,7 +483,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
 
             // End override if it was one-shot and finished playing
             if (!overrideLoop && controller.getAnimationState() == AnimationController.State.PAUSED) {
-                    this.sceneManager.onAnimationFinished(this.currentAnimState);
+                this.getSceneManager().onAnimationFinished(this.currentAnimState);
             }
         }
         else {
@@ -500,12 +509,14 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     public void playAnimation(String animationName, boolean loop) {
         if (!this.getWorld().isClient) { // run only on server
             this.setOverrideAnim(animationName != null ? animationName : "");
-            this.dataTracker.set(OVERRIDE_LOOP, loop);
+            this.setOverrideLoop(loop);
+        }else {
+            ClientPlayNetworking.send(new AnimationSyncPacket(this.getId(), animationName != null ? animationName : "", loop));
         }
     }
 
     public void stopOverrideAnimations() {
-        ClientPlayNetworking.send(new AnimationSyncPacket(this.getId(), ""));
+        ClientPlayNetworking.send(new AnimationSyncPacket(this.getId(), "",false));
     }
 
 
@@ -555,12 +566,10 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
 
     public void tick() {
         super.tick();
-        sceneManager.tick();
+        this.getSceneManager().tick();
         previousYaw = getYaw();
         previousVelocity = getVelocity();
         clothingLogic();
-//        PleasureCraft.LOGGER.info(this.dataTracker.get(OVERRIDE_ANIM));
-//        PleasureCraft.LOGGER.info(String.valueOf(this.isSceneActive()));
 
 
     }
@@ -604,10 +613,10 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         /*This is not based on the local coordinates from the entity. it is the global coordinates based on the world. It also has a base offset of -0.6 on the Y Axis
         * This is also based on the client not the server*/
         if(this.getPassengerBone() == Vec3d.ZERO){
-            return this.getPos().add(0,sceneManager.passengerYOffset,0);
+            return this.getPos().add(0,this.getSceneManager().passengerYOffset,0);
         }
         else {
-            return this.getPassengerBone().add(0,sceneManager.passengerYOffset,0);
+            return this.getPassengerBone().add(0,this.getSceneManager().passengerYOffset,0);
         }
     }
 
