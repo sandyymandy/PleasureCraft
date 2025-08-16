@@ -1,4 +1,4 @@
-package com.sandymandy.pleasurecraft.network;
+package com.sandymandy.pleasurecraft.network.girls;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.text.Text;

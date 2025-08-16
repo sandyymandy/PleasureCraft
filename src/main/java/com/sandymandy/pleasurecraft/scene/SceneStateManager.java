@@ -1,10 +1,10 @@
-///*
     package com.sandymandy.pleasurecraft.scene;
 
     import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
     import net.minecraft.entity.player.PlayerEntity;
 
     public class SceneStateManager {
+/*
         private final AbstractGirlEntity entity;
         public String passengerBoneName = "Torso2";
         public float passengerYOffset = 0f;
@@ -13,7 +13,11 @@
         }
         private boolean inScene = false;
 
-        public void startScene(PlayerEntity rider) {
+        public void startScene(PlayerEntity rider,
+                               String introAnim,
+                               String slowAnim,
+                               String fastAnim,
+                               String cumAnim ) {
             if (inScene) return;
 
             if (entity.isSittingdown()) {
@@ -41,10 +45,6 @@
             if(entity.hasPassengers()){
                 entity.removeAllPassengers();
             }
-        }
-
-        public boolean isInScene() {
-            return entity.isSceneActive();
         }
 
         public void onSceneStart(PlayerEntity player) {
@@ -78,16 +78,15 @@
 
         }
 
+        public void onAnimationFinished(String finishedAnim) {
+        }
+
+
     }
-//*/
+*/
 
-/*
-package com.sandymandy.pleasurecraft.scene;
+///*
 
-import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
-import net.minecraft.entity.player.PlayerEntity;
-
-public class SceneStateManager {
     private final AbstractGirlEntity entity;
     public String passengerBoneName = "Torso2";
     public float passengerYOffset = 0f;
@@ -114,7 +113,26 @@ public class SceneStateManager {
     public enum ScenePhase {
         NONE, INTRO, SLOW, FAST, CUM
     }
-    
+
+    // Called by the entity when an animation finishes
+    public void onAnimationFinished(String finishedAnim) {
+//        if (!inScene) return;
+
+        entity.messageAsEntity("sex");
+
+        switch (this.currentPhase) {
+            case INTRO -> {
+                if (finishedAnim.equals(animIntro)) {
+                    playPhase(ScenePhase.SLOW, animSlow, true);
+                }
+            }
+            case CUM -> {
+                if (finishedAnim.equals(animCum)) {
+                    stopScene();
+                }
+            }
+        }
+    }
 
     public void startScene(PlayerEntity rider,
                            String introAnim,
@@ -162,10 +180,6 @@ public class SceneStateManager {
         }
     }
 
-    public boolean isInScene() {
-        return entity.isSceneActive();
-    }
-
     public void onSceneStart(PlayerEntity player) {
         player.setInvisible(true);
     }
@@ -181,14 +195,28 @@ public class SceneStateManager {
 
     public void setKeyHeld(boolean held) {
         this.isKeyHeld = held;
+        if(held){
+            entity.messageAsEntity("thrust");
+
+        }
     }
 
     private void playPhase(ScenePhase phase, String animation, boolean loop) {
         currentPhase = phase;
-        entity.playAnimation(animation, loop); // <- now just uses entity system
+        entity.playAnimation(animation, loop);
     }
 
-    public void tick() {
+    public void tryTriggerCum(PlayerEntity player) {
+        entity.messageAsEntity("cum");
+        if (inScene && sceneProgress >= 1.0f && currentPhase != ScenePhase.CUM) {
+            playPhase(ScenePhase.CUM, animCum, false);
+        }
+    }
+
+
+        public void tick() {
+        entity.toggleModelBones("RightLeg, LeftLeg, Torso2", entity.isSceneActive());
+
         if (!inScene) {
             entity.setFreeze(false);
             return;
@@ -200,21 +228,12 @@ public class SceneStateManager {
             return;
         }
 
-        // Keep hiding passenger model
-        entity.toggleModelBones("RightLeg, LeftLeg, Torso2", entity.isSceneActive());
 
         PlayerEntity player = (PlayerEntity) entity.getFirstPassenger();
         if (player != null) player.setInvisible(true);
 
-        // Phase handling
+        // Phase handling for looping states
         switch (currentPhase) {
-            case INTRO -> {
-                // When intro stops naturally (one-shot), entity's playAnimation system
-                // will reset overrideAnim -> "", so we can check it here
-                if (!entity.hasActiveOverrideAnimation()) {
-                    playPhase(ScenePhase.SLOW, animSlow, true);
-                }
-            }
             case SLOW -> {
                 sceneProgress += SLOW_SPEED;
                 if (isKeyHeld) {
@@ -227,20 +246,10 @@ public class SceneStateManager {
                     playPhase(ScenePhase.SLOW, animSlow, true);
                 }
             }
-            case CUM -> {
-                // When cum animation finishes, stop scene
-                if (!entity.hasActiveOverrideAnimation()) {
-                    stopScene();
-                }
-            }
+            default -> {} // INTRO and CUM are handled by onAnimationFinished
         }
 
-        // Handle cum trigger
-        if (sceneProgress >= 1.0f && currentPhase != ScenePhase.CUM) {
-            if (player != null && player.jumping) {
-                playPhase(ScenePhase.CUM, animCum, false);
-            }
-        }
     }
 }
-*/
+
+//*/

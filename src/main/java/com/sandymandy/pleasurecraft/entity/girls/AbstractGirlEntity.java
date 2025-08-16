@@ -1,10 +1,9 @@
 package com.sandymandy.pleasurecraft.entity.girls;
 
-import com.sandymandy.pleasurecraft.PleasureCraft;
-import com.sandymandy.pleasurecraft.network.AnimationSyncPacket;
+import com.sandymandy.pleasurecraft.network.girls.AnimationSyncPacket;
 import com.sandymandy.pleasurecraft.scene.SceneStateManager;
 import com.sandymandy.pleasurecraft.screen.GirlScreenHandlerFactory;
-import com.sandymandy.pleasurecraft.network.BonePosSyncPacket;
+import com.sandymandy.pleasurecraft.network.girls.BonePosSyncPacket;
 import com.sandymandy.pleasurecraft.entity.ai.ConditionalGoal;
 import com.sandymandy.pleasurecraft.entity.ai.StopMovementGoal;
 import com.sandymandy.pleasurecraft.util.Messages;
@@ -474,8 +473,8 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
             this.currentLoopState = overrideLoop;
 
             // End override if it was one-shot and finished playing
-            if (!overrideLoop && controller.getAnimationState() == AnimationController.State.STOPPED) {
-                stopOverrideAnimations();
+            if (!overrideLoop && controller.getAnimationState() == AnimationController.State.PAUSED) {
+                    this.sceneManager.onAnimationFinished(this.currentAnimState);
             }
         }
         else {
@@ -483,8 +482,9 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
             this.currentLoopState = true;
         }
 
+
         controller.setAnimation(RawAnimation.begin().then
-                (getAnimationPath(this.currentAnimState), this.currentLoopState ? Animation.LoopType.LOOP : Animation.LoopType.PLAY_ONCE));
+                (getAnimationPath(this.currentAnimState), this.currentLoopState ? Animation.LoopType.LOOP : Animation.LoopType.HOLD_ON_LAST_FRAME));
         return PlayState.CONTINUE;
 
     }
@@ -559,7 +559,8 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         previousYaw = getYaw();
         previousVelocity = getVelocity();
         clothingLogic();
-        PleasureCraft.LOGGER.info(this.dataTracker.get(OVERRIDE_ANIM));
+//        PleasureCraft.LOGGER.info(this.dataTracker.get(OVERRIDE_ANIM));
+//        PleasureCraft.LOGGER.info(String.valueOf(this.isSceneActive()));
 
 
     }

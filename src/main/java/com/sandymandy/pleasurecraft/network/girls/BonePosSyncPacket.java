@@ -1,4 +1,4 @@
-package com.sandymandy.pleasurecraft.network;
+package com.sandymandy.pleasurecraft.network.girls;
 
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
