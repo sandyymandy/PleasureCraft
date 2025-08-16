@@ -121,7 +121,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         builder.add(INTRO_ANIM,"");
         builder.add(SLOW_ANIM,"");
         builder.add(FAST_ANIM,"");
-        builder.add(CUM_ANIM    ,"");
+        builder.add(CUM_ANIM ,"");
 
     }
 
