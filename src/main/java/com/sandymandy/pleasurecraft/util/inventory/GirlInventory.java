@@ -1,5 +1,6 @@
 package com.sandymandy.pleasurecraft.util.inventory;
 
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
@@ -9,8 +10,16 @@ import net.minecraft.entity.player.PlayerEntity;
 public interface GirlInventory extends Inventory {
     // Slot indices
     int MAIN_HAND_SLOT = 0;
-    int ARMOR_START = 1;
-    int ARMOR_END = 4;
+
+    // Armor slots mapped to vanilla slots
+    int ARMOR_FEET_SLOT = 1;
+    int ARMOR_LEGS_SLOT = 2;
+    int ARMOR_CHEST_SLOT = 3;
+    int ARMOR_HEAD_SLOT = 4;
+
+    int ARMOR_START = ARMOR_FEET_SLOT;
+    int ARMOR_END = ARMOR_HEAD_SLOT;
+
     int BACKPACK_START = 5;
     int BACKPACK_SIZE = 12;  // slots 5..16 inclusive
     int BACKPACK_END = 16;
@@ -29,7 +38,31 @@ public interface GirlInventory extends Inventory {
         return of(DefaultedList.ofSize(TOTAL_SLOTS, ItemStack.EMPTY));
     }
 
-    // Inventory interface implementations
+
+    // === Armor access helpers ===
+
+    default ItemStack getArmorStack(EquipmentSlot slot) {
+        return switch (slot) {
+            case HEAD -> getStack(4);
+            case CHEST -> getStack(3);
+            case LEGS -> getStack(2);
+            case FEET -> getStack(1);
+            default -> ItemStack.EMPTY; // mainhand/offhand not handled here
+        };
+    }
+
+    default void setArmorStack(EquipmentSlot slot, ItemStack stack) {
+        switch (slot) {
+            case HEAD -> setStack(ARMOR_HEAD_SLOT, stack);
+            case CHEST -> setStack(ARMOR_CHEST_SLOT, stack);
+            case LEGS -> setStack(ARMOR_LEGS_SLOT, stack);
+            case FEET -> setStack(ARMOR_FEET_SLOT, stack);
+            default -> {}
+        }
+    }
+
+
+    // === Inventory defaults ===
 
     @Override
     default int size() {
@@ -84,42 +117,4 @@ public interface GirlInventory extends Inventory {
     default void clear() {
         getItems().clear();
     }
-
-    // Custom validation for item insertion based on slot
-//    default boolean isItemValid(int slot, ItemStack stack) {
-//        if (stack.isEmpty()) return true; // Allow clearing the slot
-//
-//        if (slot == MAIN_HAND_SLOT) {
-//            // Only allow tools and swords in main hand slot
-//            return stack.getItem() instanceof SwordItem || stack.getItem() instanceof ToolItem;
-//        }
-//
-//        if (slot >= ARMOR_HEAD_SLOT && slot <= ARMOR_FEET_SLOT) {
-//            // Armor slots must be armor matching the slot
-//            if (!(stack.getItem() instanceof ArmorItem armor)) return false;
-//
-//            EquipmentSlot expectedSlot = switch (slot) {
-//                case ARMOR_HEAD_SLOT -> EquipmentSlot.HEAD;
-//                case ARMOR_CHEST_SLOT -> EquipmentSlot.CHEST;
-//                case ARMOR_LEGS_SLOT -> EquipmentSlot.LEGS;
-//                case ARMOR_FEET_SLOT -> EquipmentSlot.FEET;
-//                default -> null;
-//            };
-//            return expectedSlot != null && armor.getSlotType() == expectedSlot;
-//        }
-//
-//        // Backpack slots accept any item
-//        return slot >= BACKPACK_START && slot < BACKPACK_START + BACKPACK_SIZE;
-//    }
-//
-//    // Utility method to get slot index from EquipmentSlot
-//    static int getSlotForArmor(EquipmentSlot slot) {
-//        return switch (slot) {
-//            case HEAD -> ARMOR_HEAD_SLOT;
-//            case CHEST -> ARMOR_CHEST_SLOT;
-//            case LEGS -> ARMOR_LEGS_SLOT;
-//            case FEET -> ARMOR_FEET_SLOT;
-//            default -> -1;
-//        };
-//    }
 }

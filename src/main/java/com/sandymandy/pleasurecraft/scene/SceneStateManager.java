@@ -3,6 +3,8 @@
     import com.sandymandy.pleasurecraft.PleasureCraft;
     import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
     import net.minecraft.entity.player.PlayerEntity;
+
+    import java.util.List;
     import java.util.Objects;
     import static com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity.*;
 
@@ -40,6 +42,8 @@
                            String fastAnim,
                            String cumAnim) {
         if (inScene) return;
+
+//        entity.getLookControl().lookAt(rider, entity.getMaxHeadRotation() + 20, entity.getMaxLookPitchChange());
 
         // Store animations
         entity.getDataTracker().set(INTRO_ANIM, introAnim);
@@ -140,7 +144,7 @@
 
 
 
-        entity.toggleModelBones("RightLeg, LeftLeg, Torso2", entity.isSceneActive());
+        entity.toggleModelBones(List.of("RightLeg", "LeftLeg", "Torso2"), entity.isSceneActive());
 
         if (!entity.isSceneActive()) {
             entity.setFreeze(false);

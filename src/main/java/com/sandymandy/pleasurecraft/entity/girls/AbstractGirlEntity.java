@@ -9,10 +9,9 @@ import com.sandymandy.pleasurecraft.screen.GirlScreenHandlerFactory;
 import com.sandymandy.pleasurecraft.util.Messages;
 import com.sandymandy.pleasurecraft.util.inventory.GirlInventory;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityStatuses;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -30,6 +29,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -45,9 +45,12 @@ import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animatable.instance.SingletonAnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
+import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -78,7 +81,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     public float previousYaw = 0;
     public Vec3d previousVelocity = Vec3d.ZERO;
     private boolean freeze = false;
-    public Vec3d clientPassengerBonePos = Vec3d.ZERO;;
+    public Vec3d clientPassengerBonePos = Vec3d.ZERO;
     public Vec3d serverPassengerBonePos = Vec3d.ZERO;
     private String currentAnimState = "idle";
     private boolean currentLoopState = false;
@@ -94,13 +97,53 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         return "null";
     }
 
-    protected String getClothingBones() {
-        return "bra";
+    protected Map<EquipmentSlot, List<String>> getClothingBones() {
+        Map<EquipmentSlot, List<String>> clothing = new HashMap<>();
+
+        clothing.put(EquipmentSlot.HEAD, new ArrayList<>());
+
+        clothing.put(EquipmentSlot.CHEST, new ArrayList<>());
+
+        clothing.put(EquipmentSlot.LEGS, new ArrayList<>());
+
+        clothing.put(EquipmentSlot.FEET, new ArrayList<>());
+
+        return clothing;
     }
 
-    protected String getArmorBones() {
-        return "armorBoobs, armorBootyL, armorBootyR, armorChest, armorHip, armorPantsLowL, armorShoesL, armorPantsUpL, armorPantsLowR, armorShoesR, armorPantsUpR, armorShoulderL, armorShoulderR, armorHelmet";
+    // Armor bones mapped by EquipmentSlot
+    protected Map<EquipmentSlot, List<String>> getArmorBones() {
+        Map<EquipmentSlot, List<String>> armor = new HashMap<>();
+
+        armor.put(EquipmentSlot.HEAD, new ArrayList<>(List.of(
+                "armorHelmet"
+        )));
+
+        armor.put(EquipmentSlot.CHEST, new ArrayList<>(List.of(
+                "armorBoobs",
+                "armorChest",
+                "armorShoulderL",
+                "armorShoulderR"
+        )));
+
+        armor.put(EquipmentSlot.LEGS, new ArrayList<>(List.of(
+                "armorHip",
+                "armorPantsLowL",
+                "armorPantsUpL",
+                "armorPantsLowR",
+                "armorPantsUpR",
+                "armorBootyL",
+                "armorBootyR"
+        )));
+
+        armor.put(EquipmentSlot.FEET, new ArrayList<>(List.of(
+                "armorShoesL",
+                "armorShoesR"
+        )));
+
+        return armor;
     }
+
 
 
 
@@ -148,54 +191,69 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     }
 
 
-
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         Item itemInHand = itemStack.getItem();
+        if (this.isTamed()) {
 
-
-        if (!this.getWorld().isClient && !this.isTamed() && itemInHand.equals(getTameItem()) && !player.isSneaking()) {
-            itemStack.decrementUnlessCreative(1, player);
-            this.tryTame(player);
-            return ActionResult.SUCCESS;
-        }
-        else if (!this.getWorld().isClient && !this.isTamed() && !itemInHand.equals(getTameItem()) && !player.isSneaking()) {
-            this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
-            player.sendMessage(Text.literal("She ignores you. Maybe try giving her a " + getReadableTameItemName() + "."), true);
-            return ActionResult.FAIL;
-        }
-
-        if (!this.getWorld().isClient && !this.isTamed() && itemStack.equals(ItemStack.EMPTY) && player.isSneaking()) {
-            player.openHandledScreen(new GirlScreenHandlerFactory(this));
-            return ActionResult.SUCCESS;
-        }
-
-        if(!this.getWorld().isClient && this.isTamed() &! isOwner(player) && (hand.equals(Hand.MAIN_HAND) || itemInHand.equals(getTameItem()))){
-            player.sendMessage(Text.literal("She's Already In A Relationship With Someone" ), true);
-            return ActionResult.FAIL;
-        }
-
-        if (!this.getWorld().isClient && isOwner(player) && this.isTamed()){
-            if (player.isSneaking()) {
-                player.openHandledScreen(new GirlScreenHandlerFactory(this));
-                this.getNavigation().stop();
-                return ActionResult.SUCCESS;
-            }else if(!player.isSneaking()){
-                this.setSit(!isSittingdown());
+            if (this.isFoodItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
+                this.getNavigation().findPathTo(player, 20);
+                this.eat(player, hand, itemStack);
+                FoodComponent foodComponent = itemStack.get(DataComponentTypes.FOOD);
+                float f = foodComponent != null ? foodComponent.nutrition() : 1.0F;
+                this.heal(2.0F * f);
                 return ActionResult.SUCCESS;
             }
-        }
 
-        if (!this.getWorld().isClient && isOwner(player) && this.isTamed() && itemInHand.equals(Items.COAL)) {
-            this.breakUp(player);
-            return ActionResult.SUCCESS;
-        }
+            if(this.isOwner(player)) {
+                ActionResult actionResult = super.interactMob(player, hand);
+                if (itemStack.equals(ItemStack.EMPTY)){
+                    if (player.isSneaking()) {
+                        player.openHandledScreen(new GirlScreenHandlerFactory(this));
+                        return ActionResult.SUCCESS;
+                    }
+                }
+                else if (!actionResult.isAccepted() && !player.isSneaking()) {
+                    this.setSit(!this.isSittingdown());
+                    this.jumping = false;
+                    this.navigation.stop();
+                    this.setTarget(null);
+                    return ActionResult.SUCCESS.noIncrementStat();
+                }
 
-        if (itemInHand.equals(getTameItem()) && this.isTamed()) {
-            return ActionResult.PASS;
-        }
+                return actionResult;
 
+            }else {
+                if ((itemInHand.equals(getTameItem()))) {
+                    player.sendMessage(Text.literal("She's Already In A Relationship With Someone"), true);
+                    return ActionResult.FAIL;
+                }
+            }
+        } else {
+
+            if (itemStack.isEmpty() && player.isSneaking()) {
+                this.getNavigation().findPathTo(player, 20);
+                player.openHandledScreen(new GirlScreenHandlerFactory(this));
+                return ActionResult.SUCCESS;
+            }
+
+            if (!this.getWorld().isClient) {
+                if (itemInHand.equals(getTameItem()) && !player.isSneaking()) {
+                    itemStack.decrementUnlessCreative(1, player);
+                    this.tryTame(player);
+                    return ActionResult.SUCCESS;
+                } else {
+                    // Wrong item OR empty hand (not sneaking)
+                    player.sendMessage(Text.literal(
+                            "She ignores you. Maybe try giving her a " + getReadableTameItemName() + "."
+                    ), true);
+                    return ActionResult.FAIL;
+                }
+            }
+
+
+        }
         return super.interactMob(player, hand);
     }
 
@@ -210,7 +268,6 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
             this.setBasePosHere();
         } else {
             this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
-            player.sendMessage(Text.literal("You Asked " + getGirlDisplayName() + " Out And She Said §cNo"), true);
         }
     }
 
@@ -278,6 +335,10 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     @Override
     public boolean isBreedingItem(ItemStack stack) {
         return false;
+    }
+
+    public boolean isFoodItem(ItemStack stack) {
+        return stack.isIn(ItemTags.WOLF_FOOD);
     }
 
     @Override
@@ -380,76 +441,67 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         }
     }
 
-    @Override
-    public void tickMovement() {
-        super.tickMovement();
+    private void clothingLogic() {
+        // Always show/hide clothing based on strip state first
+        for (Map.Entry<EquipmentSlot, List<String>> entry : getClothingBones().entrySet()) {
+            EquipmentSlot slot = entry.getKey();
+            List<String> bones = entry.getValue();
 
-        if (attackTarget != null) {
-            ticksSinceLastHit++;
+            boolean wearingArmor = !getInventory().getArmorStack(slot).isEmpty();
+            boolean visible = !isStripped() && !wearingArmor; // clothing hidden if armor in that slot
 
-            if (ticksSinceLastHit >= MAX_TICKS_NO_HIT) {
-                // Lost interest — stop attacking
-                this.setTarget(null);
-                attackTarget = null;
-                ticksSinceLastHit = 0;
-            }
+            toggleModelBones(bones, visible);
+        }
+
+        // Naked bits logic
+        toggleModelBones(List.of("vagina"), isStripped());
+    }
+
+    private void armorLogic() {
+        for (Map.Entry<EquipmentSlot, List<String>> entry : getArmorBones().entrySet()) {
+            EquipmentSlot slot = entry.getKey();
+            List<String> bones = entry.getValue();
+
+            boolean wearingArmor = !getInventory().getArmorStack(slot).isEmpty();
+            boolean visible = !isStripped() && wearingArmor; // armor shows if equipped and not stripped
+
+            toggleModelBones(bones, visible);
         }
     }
 
-
-    private void clothingLogic(){
-        toggleModelBones(getClothingBones(), !isStripped() && isBoneVisible(getClothingBones()));
-        toggleModelBones(getArmorBones(), !isStripped());
-        toggleModelBones("vagina", isStripped());
-    }
-
-    @Override
-    public void setTarget(@Nullable LivingEntity target) {
-        super.setTarget(target);
-
-        if (target != null) {
-            attackTarget = target;
-            ticksSinceLastHit = 0; // reset countdown on new target
-        } else {
-            attackTarget = null;
-            ticksSinceLastHit = 0;
-        }
-    }
-
-    @Override
-    public boolean tryAttack(ServerWorld world, Entity target) {
-        boolean success = super.tryAttack(world, target);
-
-        if (success && target == attackTarget) {
-            ticksSinceLastHit = 0; // reset timer on successful hit
-        }
-
-        return success;
-    }
-
-
-    public void toggleModelBones(String bones, boolean visible){
+    public void toggleModelBones(List<String> bones, boolean visible){
         if(!getWorld().isClient){
             return;
         }
-
-        String[] boneArray = bones.replaceAll("\\s+", "").split(",");
 
         if (this.boneVisibility == null) {
             this.boneVisibility = new HashMap<>();
         }
 
 
-        for (String boneName : boneArray) {
+        for (String boneName : bones) {
             this.boneVisibility.put(boneName, visible);
         }
     }
 
-    public void overrideBoneTextures(String bones, Identifier texture) {
+    public boolean isBoneVisible(List<String> bones) {
+        // Return true only if ALL bones in the list are visible
+        for (String bone : bones) {
+            if (!boneVisibility.getOrDefault(bone, true)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void overrideBoneTextures(List<String> bones, Identifier texture) {
         if (!this.getWorld().isClient) return;
 
-        String[] boneArray = bones.replaceAll("\\s+", "").split(",");
-        for (String boneName : boneArray) {
+        if (this.boneTextureOverrides == null) {
+            this.boneTextureOverrides = new HashMap<>();
+        }
+
+        for (String boneName : bones) {
             boneTextureOverrides.put(boneName, texture);
         }
     }
@@ -458,9 +510,6 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         return this.boneTextureOverrides;
     }
 
-    public boolean isBoneVisible(String boneName) {
-        return boneVisibility.getOrDefault(boneName, true); // default to visible
-    }
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(new AnimationController<>(this, "controller", 3, this::handleAnimations));
@@ -505,6 +554,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         return "idle";
     }
 
+
     // Call this to force an animation
     public void playAnimation(String animationName, boolean loop) {
         if (!this.getWorld().isClient) { // run only on server
@@ -518,7 +568,6 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     public void stopOverrideAnimations() {
         ClientPlayNetworking.send(new AnimationSyncPacket(this.getId(), "",false));
     }
-
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
@@ -563,6 +612,21 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         }
     }
 
+    @Override
+    public void tickMovement() {
+        super.tickMovement();
+
+        if (attackTarget != null) {
+            ticksSinceLastHit++;
+
+            if (ticksSinceLastHit >= MAX_TICKS_NO_HIT) {
+                // Lost interest — stop attacking
+                this.setTarget(null);
+                attackTarget = null;
+                ticksSinceLastHit = 0;
+            }
+        }
+    }
 
     public void tick() {
         super.tick();
@@ -570,8 +634,33 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         previousYaw = getYaw();
         previousVelocity = getVelocity();
         clothingLogic();
+        armorLogic();
 
 
+    }
+
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        super.setTarget(target);
+
+        if (target != null) {
+            attackTarget = target;
+            ticksSinceLastHit = 0; // reset countdown on new target
+        } else {
+            attackTarget = null;
+            ticksSinceLastHit = 0;
+        }
+    }
+
+    @Override
+    public boolean tryAttack(ServerWorld world, Entity target) {
+        boolean success = super.tryAttack(world, target);
+
+        if (success && target == attackTarget) {
+            ticksSinceLastHit = 0; // reset timer on successful hit
+        }
+
+        return success;
     }
 
     public void handlePassengerBone(GeoBone bone){

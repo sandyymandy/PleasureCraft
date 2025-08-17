@@ -1,12 +1,16 @@
 package com.sandymandy.pleasurecraft.entity.girls;
 
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.world.World;
+
+import java.util.List;
+import java.util.Map;
 
 public class LucyEntity extends AbstractGirlEntity{
 
@@ -27,6 +31,11 @@ public class LucyEntity extends AbstractGirlEntity{
     @Override
     protected String getGirlID() {
         return "lucy";
+    }
+
+    @Override
+    protected Map<EquipmentSlot, List<String>> getClothingBones() {
+        return super.getClothingBones();
     }
 
     public static DefaultAttributeContainer.Builder createAttributes() {

@@ -1,12 +1,18 @@
 package com.sandymandy.pleasurecraft.entity.girls;
 
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BiaEntity extends AbstractGirlEntity{
 
@@ -30,8 +36,14 @@ public class BiaEntity extends AbstractGirlEntity{
     }
 
     @Override
-    protected String getClothingBones() {
-        return "slip";
+    protected Map<EquipmentSlot, List<String>> getClothingBones() {
+        Map<EquipmentSlot, List<String>> clothing = super.getClothingBones();
+
+        clothing.put(EquipmentSlot.HEAD, List.of("flower"));
+
+        clothing.put(EquipmentSlot.LEGS, List.of("slip"));
+
+        return clothing;
     }
 
 
