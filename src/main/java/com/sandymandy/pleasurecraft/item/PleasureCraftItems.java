@@ -1,7 +1,7 @@
 package com.sandymandy.pleasurecraft.item;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
-import com.sandymandy.pleasurecraft.entity.EntityInit;
+import com.sandymandy.pleasurecraft.entity.PleasureCraftEntity;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.*;
 
@@ -14,14 +14,14 @@ import net.minecraft.util.Identifier;
 import java.util.function.Function;
 
 
-public class ModItems {
+public class PleasureCraftItems {
 
 
     public static final Item LUCY_SPAWN_EGG = registerItem("lucy_spawn_egg",
-            setting -> new SpawnEggItem(EntityInit.LUCY , setting));
+            setting -> new SpawnEggItem(PleasureCraftEntity.LUCY , setting));
 
     public static final Item BIA_SPAWN_EGG = registerItem("bia_spawn_egg",
-            setting -> new SpawnEggItem(EntityInit.BIA, setting));
+            setting -> new SpawnEggItem(PleasureCraftEntity.BIA, setting));
 
 
     private static Item registerItem(String name, Function<Item.Settings, Item> factory) {

@@ -7,7 +7,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
-public class ModTags {
+public class PleasureCraftTags {
 
     public static class Blocks{
         private static TagKey<Block> createTag(String name){

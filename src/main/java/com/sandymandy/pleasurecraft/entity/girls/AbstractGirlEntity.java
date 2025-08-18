@@ -4,11 +4,13 @@ import com.sandymandy.pleasurecraft.entity.ai.ConditionalGoal;
 import com.sandymandy.pleasurecraft.entity.ai.StopMovementGoal;
 import com.sandymandy.pleasurecraft.network.girls.AnimationSyncPacket;
 import com.sandymandy.pleasurecraft.network.girls.BonePosSyncPacket;
+import com.sandymandy.pleasurecraft.network.girls.ClothingArmorVisibilityS2CPacket;
 import com.sandymandy.pleasurecraft.scene.SceneStateManager;
 import com.sandymandy.pleasurecraft.screen.GirlScreenHandlerFactory;
 import com.sandymandy.pleasurecraft.util.Messages;
 import com.sandymandy.pleasurecraft.util.inventory.GirlInventory;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.*;
@@ -30,6 +32,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -48,18 +51,16 @@ import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public abstract class AbstractGirlEntity extends TameableEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     private final SceneStateManager sceneManager = new SceneStateManager(this);
     public Map<String, Boolean> boneVisibility = new HashMap<>();
-    public Map<String, Boolean> boneVisibilityExcludeChildren = new HashMap<>();
     public Map<String, Identifier> boneTextureOverrides = new HashMap<>();
+    public final Map<EquipmentSlot, Boolean> clothingVisibility = new EnumMap<>(EquipmentSlot.class);
+    public final Map<EquipmentSlot, Boolean> armorVisibility = new EnumMap<>(EquipmentSlot.class);
     public boolean showHiddenBones = false;
     public final int maxRelationshipLevel = 3;
     public int currentRelationshipLevel;
@@ -85,6 +86,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     public Vec3d serverPassengerBonePos = Vec3d.ZERO;
     private String currentAnimState = "idle";
     private boolean currentLoopState = false;
+
     protected Item getTameItem() {
         return Items.DANDELION;
     }
@@ -110,8 +112,8 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
 
         return clothing;
     }
-
     // Armor bones mapped by EquipmentSlot
+
     protected Map<EquipmentSlot, List<String>> getArmorBones() {
         Map<EquipmentSlot, List<String>> armor = new HashMap<>();
 
@@ -441,33 +443,57 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         }
     }
 
-    private void clothingLogic() {
-        // Always show/hide clothing based on strip state first
-        for (Map.Entry<EquipmentSlot, List<String>> entry : getClothingBones().entrySet()) {
-            EquipmentSlot slot = entry.getKey();
-            List<String> bones = entry.getValue();
 
-            boolean wearingArmor = !getInventory().getArmorStack(slot).isEmpty();
-            boolean visible = !isStripped() && !wearingArmor; // clothing hidden if armor in that slot
 
-            toggleModelBones(bones, visible);
+    private void updateClothingAndArmor() {
+        if (this.getWorld().isClient()) return;
+
+        boolean stripped = isStripped();
+
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            clothingVisibility.put(slot, !stripped && this.inventory.getArmorStack(slot).isEmpty());
+            armorVisibility.put(slot, !stripped && !this.inventory.getArmorStack(slot).isEmpty());
         }
 
-        // Naked bits logic
+        // --- send packet to client ---
+        List<Boolean> clothingList = Arrays.stream(EquipmentSlot.values())
+                .map(s -> clothingVisibility.getOrDefault(s, false))
+                .toList();
+
+        List<Boolean> armorList = Arrays.stream(EquipmentSlot.values())
+                .map(s -> armorVisibility.getOrDefault(s, false))
+                .toList();
+
+        ClothingArmorVisibilityS2CPacket packet =
+                new ClothingArmorVisibilityS2CPacket(this.getId(), clothingList, armorList);
+
+        for (ServerPlayerEntity player : Objects.requireNonNull(this.getServer()).getPlayerManager().getPlayerList()) {
+            ServerPlayNetworking.send(player, packet);
+        }
+    }
+
+    public void applyClothingAndArmor() {
+        if (!this.getWorld().isClient()) return;
+
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            List<String> clothingBones = getClothingBones().get(slot);
+            if (clothingBones != null) {
+                toggleModelBones(clothingBones, clothingVisibility.getOrDefault(slot, false));
+            }
+
+            List<String> armorBones = getArmorBones().get(slot);
+            if (armorBones != null) {
+                toggleModelBones(armorBones, armorVisibility.getOrDefault(slot, false));
+            }
+        }
+
+        // Naked bits
         toggleModelBones(List.of("vagina"), isStripped());
     }
 
-    private void armorLogic() {
-        for (Map.Entry<EquipmentSlot, List<String>> entry : getArmorBones().entrySet()) {
-            EquipmentSlot slot = entry.getKey();
-            List<String> bones = entry.getValue();
 
-            boolean wearingArmor = !getInventory().getArmorStack(slot).isEmpty();
-            boolean visible = !isStripped() && wearingArmor; // armor shows if equipped and not stripped
 
-            toggleModelBones(bones, visible);
-        }
-    }
+
 
     public void toggleModelBones(List<String> bones, boolean visible){
         if(!getWorld().isClient){
@@ -514,7 +540,6 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         controllerRegistrar.add(new AnimationController<>(this, "controller", 3, this::handleAnimations));
     }
-
 
     private <T extends GeoAnimatable> PlayState handleAnimations(AnimationState<T> state) {
         AnimationController<?> controller = state.getController();
@@ -612,6 +637,14 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         }
     }
 
+    public void tick() {
+        super.tick();
+        this.getSceneManager().tick();
+        previousYaw = getYaw();
+        previousVelocity = getVelocity();
+        updateClothingAndArmor();
+    }
+
     @Override
     public void tickMovement() {
         super.tickMovement();
@@ -626,17 +659,6 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
                 ticksSinceLastHit = 0;
             }
         }
-    }
-
-    public void tick() {
-        super.tick();
-        this.getSceneManager().tick();
-        previousYaw = getYaw();
-        previousVelocity = getVelocity();
-        clothingLogic();
-        armorLogic();
-
-
     }
 
     @Override

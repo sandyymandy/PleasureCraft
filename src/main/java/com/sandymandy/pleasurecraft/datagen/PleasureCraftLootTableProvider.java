@@ -1,4 +1,4 @@
 package com.sandymandy.pleasurecraft.datagen;
 
-public class ModBlockTagProvider {
+public class PleasureCraftLootTableProvider {
 }

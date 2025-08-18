@@ -5,7 +5,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
-public class CustomKeybinds {
+public class PleasureCraftKeybinds {
     public static KeyBinding thrustKey;
     public static KeyBinding cumKey;
 
@@ -24,6 +24,5 @@ public class CustomKeybinds {
                 "key.categories.pleasurecraft"
         ));
 
-
-    }
+  }
 }

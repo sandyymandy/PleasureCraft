@@ -7,6 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.entity.player.PlayerEntity;
 
+import java.util.List;
+
 public interface GirlInventory extends Inventory {
     // Slot indices
     int MAIN_HAND_SLOT = 0;
@@ -102,6 +104,17 @@ public interface GirlInventory extends Inventory {
         }
         markDirty();
     }
+
+    // New method: set the entire inventory at once
+    default void setItems(List<ItemStack> items) {
+        DefaultedList<ItemStack> inventory = getItems();
+
+        // Copy provided items into inventory
+        for (int i = 0; i < items.size() && i < inventory.size(); i++) {
+            inventory.set(i, items.get(i));
+        }
+    }
+
 
     @Override
     default void markDirty() {

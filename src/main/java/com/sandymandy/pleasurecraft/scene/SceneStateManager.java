@@ -1,11 +1,14 @@
     package com.sandymandy.pleasurecraft.scene;
 
     import com.sandymandy.pleasurecraft.PleasureCraft;
+    import com.sandymandy.pleasurecraft.client.PleasureCraftKeybinds;
     import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
+    import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
     import net.minecraft.entity.player.PlayerEntity;
 
     import java.util.List;
     import java.util.Objects;
+
     import static com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity.*;
 
     public class SceneStateManager {
@@ -97,7 +100,7 @@
             stopScene();
         }
         else {
-            PleasureCraft.LOGGER.info(finishedAnim+" is not equal to " + this.animIntro + " or " + this.animSlow);
+            PleasureCraft.LOGGER.error(finishedAnim+" is not equal to " + this.animIntro + " or " + this.animSlow);
         }
 
     }
@@ -113,10 +116,10 @@
 
     public void setKeyHeld(boolean held) {
         this.isKeyHeld = held;
-//        if(held){
-//            entity.messageAsEntity("thrust");
-//
-//        }
+        if(held){
+            entity.messageAsEntity("thrust");
+
+        }
     }
 
     private void playPhase(ScenePhase phase, String animation, boolean loop) {
@@ -124,14 +127,31 @@
         entity.playAnimation(animation, loop);
     }
 
-    public void tryTriggerCum(PlayerEntity player) {
-//        entity.messageAsEntity("cum");
+    public void tryTriggerCum() {
+        entity.messageAsEntity("cum");
         if (entity.isSceneActive() && sceneProgress >= 1.0f && currentPhase != ScenePhase.CUM) {
             playPhase(ScenePhase.CUM, animCum, false);
         }
     }
 
+        private void handleKeybinds() {
+            ClientTickEvents.END_CLIENT_TICK.register(client -> {
+                if (client.player == null) return;
+
+                // Thrust button held
+                boolean thrustHeld = PleasureCraftKeybinds.thrustKey.isPressed();
+                setKeyHeld(thrustHeld);
+
+                // Cum button (pressed once)
+                if (PleasureCraftKeybinds.cumKey.wasPressed()) {
+                    tryTriggerCum();
+                }
+            });
+        }
+
     public void tick() {
+        handleKeybinds();
+
         if(!(Objects.equals(this.animIntro, entity.getDataTracker().get(INTRO_ANIM)) &&
                 Objects.equals(this.animSlow, entity.getDataTracker().get(SLOW_ANIM)) &&
                 Objects.equals(this.animFast, entity.getDataTracker().get(FAST_ANIM)) &&

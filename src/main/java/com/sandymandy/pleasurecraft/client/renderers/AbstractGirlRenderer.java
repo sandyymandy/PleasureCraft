@@ -14,8 +14,6 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import java.util.Map;
 
 public abstract class AbstractGirlRenderer<T extends AbstractGirlEntity> extends GeoEntityRenderer<T> {
-    Vec3d currentPos = Vec3d.ZERO;
-
     public AbstractGirlRenderer(EntityRendererFactory.Context renderManager, GeoModel<T> model) {
         super(renderManager, model);
     }
@@ -45,20 +43,6 @@ public abstract class AbstractGirlRenderer<T extends AbstractGirlEntity> extends
                 });
             }
         }
-
-        if (entity.boneVisibilityExcludeChildren != null) {
-            for (Map.Entry<String, Boolean> entry : entity.boneVisibilityExcludeChildren.entrySet()) {
-                String boneName = entry.getKey();
-                boolean isVisible = entry.getValue();
-
-
-                model.getBone(boneName).ifPresent(bone -> {
-                    bone.setHidden(!isVisible);
-                });
-            }
-        }
-
-
     }
 
     @Override
