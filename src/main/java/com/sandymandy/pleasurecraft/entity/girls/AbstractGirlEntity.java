@@ -1,9 +1,11 @@
 package com.sandymandy.pleasurecraft.entity.girls;
 
+import com.mojang.authlib.GameProfile;
+import com.sandymandy.pleasurecraft.PleasureCraft;
 import com.sandymandy.pleasurecraft.entity.ai.ConditionalGoal;
 import com.sandymandy.pleasurecraft.entity.ai.StopMovementGoal;
-import com.sandymandy.pleasurecraft.network.girls.AnimationSyncPacket;
-import com.sandymandy.pleasurecraft.network.girls.BonePosSyncPacket;
+import com.sandymandy.pleasurecraft.network.girls.AnimationSyncC2SPacket;
+import com.sandymandy.pleasurecraft.network.girls.BonePosSyncC2SPacket;
 import com.sandymandy.pleasurecraft.network.girls.ClothingArmorVisibilityS2CPacket;
 import com.sandymandy.pleasurecraft.scene.SceneStateManager;
 import com.sandymandy.pleasurecraft.screen.GirlScreenHandlerFactory;
@@ -11,6 +13,8 @@ import com.sandymandy.pleasurecraft.util.Messages;
 import com.sandymandy.pleasurecraft.util.inventory.GirlInventory;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.*;
@@ -39,6 +43,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -55,15 +60,6 @@ import java.util.*;
 
 
 public abstract class AbstractGirlEntity extends TameableEntity implements GeoEntity {
-    private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
-    private final SceneStateManager sceneManager = new SceneStateManager(this);
-    public Map<String, Boolean> boneVisibility = new HashMap<>();
-    public Map<String, Identifier> boneTextureOverrides = new HashMap<>();
-    public final Map<EquipmentSlot, Boolean> clothingVisibility = new EnumMap<>(EquipmentSlot.class);
-    public final Map<EquipmentSlot, Boolean> armorVisibility = new EnumMap<>(EquipmentSlot.class);
-    public boolean showHiddenBones = false;
-    public final int maxRelationshipLevel = 3;
-    public int currentRelationshipLevel;
     private static final TrackedData<Boolean> SITTING = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> STRIPPED = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> FOLLOWING = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -74,6 +70,14 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     public static final TrackedData<String> SLOW_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
     public static final TrackedData<String> FAST_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
     public static final TrackedData<String> CUM_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
+    private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    private final SceneStateManager sceneManager = new SceneStateManager(this);
+    public Map<String, Boolean> boneVisibility = new HashMap<>();
+    public Map<String, Identifier> boneTextureOverrides = new HashMap<>();
+    public Map<String, Identifier> playerTexture = new HashMap<>();
+    public Map<String, Vec2f> boneUVOffsets = new HashMap<>();
+    public final Map<EquipmentSlot, Boolean> clothingVisibility = new EnumMap<>(EquipmentSlot.class);
+    public final Map<EquipmentSlot, Boolean> armorVisibility = new EnumMap<>(EquipmentSlot.class);
     private final GirlInventory inventory = GirlInventory.ofSize();
     private BlockPos basePos;
     private LivingEntity attackTarget;
@@ -84,6 +88,9 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     private boolean freeze = false;
     public Vec3d clientPassengerBonePos = Vec3d.ZERO;
     public Vec3d serverPassengerBonePos = Vec3d.ZERO;
+    public boolean showHiddenBones = false;
+    public final int maxRelationshipLevel = 3;
+    public int currentRelationshipLevel;
     private String currentAnimState = "idle";
     private boolean currentLoopState = false;
 
@@ -366,52 +373,6 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         }
     }
 
-    @Override
-    public boolean damage(ServerWorld world, DamageSource source, float amount) {
-        if (this.isInvulnerableTo(world, source)) return false;
-
-        String damageType = source.getName();
-        // If killed by /kill or void, allow normal death
-        if (damageType.equals("outOfWorld") || damageType.equals("genericKill")) {
-            return super.damage(world, source, amount);
-        }
-
-        if(this.isTamed() && (this.getHealth() - amount <= 0.0F) &! (damageType.equals("outOfWorld") || damageType.equals("genericKill") || isFrozenInPlace())) {
-            this.setHealth(getMaxHealth());
-            // If basePos is still null, fall back to current position
-            BlockPos respawnPos = (this.basePos != null)
-                    ? this.basePos
-                    : this.getBlockPos();
-
-            // Send a message referencing whichever Pos we have
-            new Messages().GlobleMessage(
-                    this.getWorld(),
-                    getGirlDisplayName() + " died and respawned at base: " +
-                            respawnPos.getX() + ", " +
-                            respawnPos.getY() + ", " +
-                            respawnPos.getZ()
-            );
-
-            // If basePos was null, make sure to set it now so future hits won’t NPE
-            if (this.basePos == null) {
-                this.basePos = respawnPos;
-            }
-            teleportToBase();
-
-            return false;
-        }
-        else if(isFrozenInPlace() &! damageType.equals("outOfWorld") || damageType.equals("genericKill")){
-            if(!this.hasPassengers()){
-                new Messages().GlobleMessage(
-                        this.getWorld(),getGirlDisplayName() + " is busy at the moment");
-            }
-            return false;
-        }
-        else{
-            return super.damage(world, source, amount);
-        }
-    }
-
     public void breakUp(PlayerEntity player) {
         if(!player.getWorld().isClient){
             this.setTamed(false,true); // Mark the entity as untamed
@@ -493,8 +454,6 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
 
 
 
-
-
     public void toggleModelBones(List<String> bones, boolean visible){
         if(!getWorld().isClient){
             return;
@@ -510,26 +469,31 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         }
     }
 
-    public boolean isBoneVisible(List<String> bones) {
-        // Return true only if ALL bones in the list are visible
-        for (String bone : bones) {
-            if (!boneVisibility.getOrDefault(bone, true)) {
-                return true;
-            }
-        }
-        return false;
+
+    public void overrideBoneTexture(String boneName, Identifier texture) {
+        if (this.boneTextureOverrides == null) this.boneTextureOverrides = new HashMap<>();
+        this.boneTextureOverrides.put(boneName, texture);
     }
 
-    public void overrideBoneTextures(List<String> bones, Identifier texture) {
-        if (!this.getWorld().isClient) return;
+    public void overrideBoneUV(String boneName, float uOffset, float vOffset) {
+        if (this.boneUVOffsets == null) this.boneUVOffsets = new HashMap<>();
+        this.boneUVOffsets.put(boneName, new Vec2f(uOffset, vOffset));
+    }
 
-        if (this.boneTextureOverrides == null) {
-            this.boneTextureOverrides = new HashMap<>();
+    @Nullable
+    public Vec2f getBoneUVOffset(String boneName) {
+        if (boneUVOffsets != null && boneUVOffsets.containsKey(boneName)) {
+            return boneUVOffsets.get(boneName);
         }
+        return null;
+    }
 
-        for (String boneName : bones) {
-            boneTextureOverrides.put(boneName, texture);
+    @Nullable
+    public Identifier getBoneTexture(String boneName) {
+        if (boneTextureOverrides != null && boneTextureOverrides.containsKey(boneName)) {
+            return boneTextureOverrides.get(boneName);
         }
+        return null;
     }
 
     public Map<String, Identifier> getBoneTextureOverrides() {
@@ -581,17 +545,17 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
 
 
     // Call this to force an animation
+
     public void playAnimation(String animationName, boolean loop) {
         if (!this.getWorld().isClient) { // run only on server
             this.setOverrideAnim(animationName != null ? animationName : "");
             this.setOverrideLoop(loop);
         }else {
-            ClientPlayNetworking.send(new AnimationSyncPacket(this.getId(), animationName != null ? animationName : "", loop));
+            ClientPlayNetworking.send(new AnimationSyncC2SPacket(this.getId(), animationName != null ? animationName : "", loop));
         }
     }
-
     public void stopOverrideAnimations() {
-        ClientPlayNetworking.send(new AnimationSyncPacket(this.getId(), "",false));
+        ClientPlayNetworking.send(new AnimationSyncC2SPacket(this.getId(), "",false));
     }
 
     @Override
@@ -643,6 +607,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         previousYaw = getYaw();
         previousVelocity = getVelocity();
         updateClothingAndArmor();
+        applySkinToBone((PlayerEntity) this.getFirstPassenger());
     }
 
     @Override
@@ -689,7 +654,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         if (bone != null) {
             Vector3d bonePos = bone.getWorldPosition();
             this.clientPassengerBonePos = new Vec3d(bonePos.x, bonePos.y, bonePos.z);
-            ClientPlayNetworking.send(new BonePosSyncPacket(this.getId(), this.clientPassengerBonePos));
+            ClientPlayNetworking.send(new BonePosSyncC2SPacket(this.getId(), this.clientPassengerBonePos));
 
         }
 
@@ -738,6 +703,52 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     @Override
     public boolean canImmediatelyDespawn(double distanceSquared) {
         return false;
+    }
+
+    @Override
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
+        if (this.isInvulnerableTo(world, source)) return false;
+
+        String damageType = source.getName();
+        // If killed by /kill or void, allow normal death
+        if (damageType.equals("outOfWorld") || damageType.equals("genericKill")) {
+            return super.damage(world, source, amount);
+        }
+
+        if(this.isTamed() && (this.getHealth() - amount <= 0.0F) &! (damageType.equals("outOfWorld") || damageType.equals("genericKill") || isFrozenInPlace())) {
+            this.setHealth(getMaxHealth());
+            // If basePos is still null, fall back to current position
+            BlockPos respawnPos = (this.basePos != null)
+                    ? this.basePos
+                    : this.getBlockPos();
+
+            // Send a message referencing whichever Pos we have
+            new Messages().GlobleMessage(
+                    this.getWorld(),
+                    getGirlDisplayName() + " died and respawned at base: " +
+                            respawnPos.getX() + ", " +
+                            respawnPos.getY() + ", " +
+                            respawnPos.getZ()
+            );
+
+            // If basePos was null, make sure to set it now so future hits won’t NPE
+            if (this.basePos == null) {
+                this.basePos = respawnPos;
+            }
+            teleportToBase();
+
+            return false;
+        }
+        else if(isFrozenInPlace() &! damageType.equals("outOfWorld") || damageType.equals("genericKill")){
+            if(!this.hasPassengers()){
+                new Messages().GlobleMessage(
+                        this.getWorld(),getGirlDisplayName() + " is busy at the moment");
+            }
+            return false;
+        }
+        else{
+            return super.damage(world, source, amount);
+        }
     }
 
     @Override
@@ -813,6 +824,34 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     private String getAnimationPath(String animation){
         return "animation." + this.getGirlID() + "." + animation;
     }
+
+    public void applySkinToBone(PlayerEntity player) {
+        Identifier texture;
+
+        if (player != null) {
+            MinecraftClient client = MinecraftClient.getInstance();
+            PlayerSkinProvider skinProvider = client.getSkinProvider();
+
+            GameProfile profile = player.getGameProfile();
+
+            // Get the skin identifier
+            texture = skinProvider.getSkinTextures(profile).texture();
+
+            // Fallback to Steve if null
+            if (texture == null) {
+                texture = Identifier.of(PleasureCraft.MOD_ID, "textures/player/steve.png");
+            }
+        } else {
+            texture = Identifier.of(PleasureCraft.MOD_ID, "textures/player/steve.png");
+        }
+
+        // Store in the per-bone player texture map
+        if (this.playerTexture == null) this.playerTexture = new HashMap<>();
+        this.overrideBoneTexture("steve", Identifier.of(PleasureCraft.MOD_ID, "textures/player/steve.png"));
+        this.playerTexture.put("steve", texture);
+    }
+
+
 
 
 }

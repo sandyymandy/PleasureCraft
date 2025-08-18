@@ -5,6 +5,7 @@
     import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
     import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
     import net.minecraft.entity.player.PlayerEntity;
+    import net.minecraft.util.Identifier;
 
     import java.util.List;
     import java.util.Objects;
@@ -149,6 +150,8 @@
             });
         }
 
+
+
     public void tick() {
         handleKeybinds();
 
@@ -161,6 +164,8 @@
             this.animFast  = entity.getDataTracker().get(FAST_ANIM);
             this.animCum   = entity.getDataTracker().get(CUM_ANIM);
         }
+
+
 
 
 

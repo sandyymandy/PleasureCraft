@@ -1,11 +1,8 @@
 package com.sandymandy.pleasurecraft.entity;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
-import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
 import com.sandymandy.pleasurecraft.entity.girls.BiaEntity;
 import com.sandymandy.pleasurecraft.entity.girls.LucyEntity;
-import com.sandymandy.pleasurecraft.network.girls.ButtonPacket;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -15,9 +12,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
-import java.util.Objects;
-
-public class PleasureCraftEntity {
+public class PleasureCraftEntities {
     public static final Identifier LUCY_ID = Identifier.of(PleasureCraft.MOD_ID, "lucy");
     public static final Identifier BIA_ID = Identifier.of(PleasureCraft.MOD_ID, "bia");
 

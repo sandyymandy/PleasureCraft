@@ -8,8 +8,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import com.sandymandy.pleasurecraft.PleasureCraft;
 
-public record BonePosSyncPacket(int entityId, Vec3d position) implements CustomPayload {
-    public static final Id<BonePosSyncPacket> ID = new Id<>(Identifier.of(PleasureCraft.MOD_ID, "sync_passenger_bone_pos"));
+public record BonePosSyncC2SPacket(int entityId, Vec3d position) implements CustomPayload {
+    public static final Id<BonePosSyncC2SPacket> ID = new Id<>(Identifier.of(PleasureCraft.MOD_ID, "sync_passenger_bone_pos"));
 
 
     public static final PacketCodec<RegistryByteBuf, Vec3d> VEC3D_CODEC = PacketCodec.of(
@@ -23,10 +23,10 @@ public record BonePosSyncPacket(int entityId, Vec3d position) implements CustomP
 
 
     // Tuple codec for the full payload
-    public static final PacketCodec<RegistryByteBuf, BonePosSyncPacket> CODEC = PacketCodec.tuple(
-            PacketCodecs.VAR_INT, BonePosSyncPacket::entityId,
-            VEC3D_CODEC, BonePosSyncPacket::position,
-            BonePosSyncPacket::new
+    public static final PacketCodec<RegistryByteBuf, BonePosSyncC2SPacket> CODEC = PacketCodec.tuple(
+            PacketCodecs.VAR_INT, BonePosSyncC2SPacket::entityId,
+            VEC3D_CODEC, BonePosSyncC2SPacket::position,
+            BonePosSyncC2SPacket::new
     );
     @Override
     public Id<? extends CustomPayload> getId() {

@@ -2,9 +2,9 @@ package com.sandymandy.pleasurecraft.network;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
 import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
-import com.sandymandy.pleasurecraft.network.girls.AnimationSyncPacket;
-import com.sandymandy.pleasurecraft.network.girls.BonePosSyncPacket;
-import com.sandymandy.pleasurecraft.network.girls.ButtonPacket;
+import com.sandymandy.pleasurecraft.network.girls.AnimationSyncC2SPacket;
+import com.sandymandy.pleasurecraft.network.girls.BonePosSyncC2SPacket;
+import com.sandymandy.pleasurecraft.network.girls.ButtonC2SPacket;
 import com.sandymandy.pleasurecraft.network.girls.ClothingArmorVisibilityS2CPacket;
 import com.sandymandy.pleasurecraft.network.players.CumKeybindC2SPacket;
 import com.sandymandy.pleasurecraft.network.players.ThrustKeybindC2SPacket;
@@ -19,19 +19,21 @@ import java.util.Objects;
 public class PleasureCraftPackets {
 
     public static void registerPackets(){
-        PayloadTypeRegistry.playC2S().register(ButtonPacket.ID, ButtonPacket.CODEC);
-        PayloadTypeRegistry.playC2S().register(BonePosSyncPacket.ID, BonePosSyncPacket.CODEC);
-        PayloadTypeRegistry.playC2S().register(AnimationSyncPacket.ID, AnimationSyncPacket.CODEC);
+        // --- C2S (client → server) ---
+        PayloadTypeRegistry.playC2S().register(ButtonC2SPacket.ID, ButtonC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(BonePosSyncC2SPacket.ID, BonePosSyncC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(AnimationSyncC2SPacket.ID, AnimationSyncC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(CumKeybindC2SPacket.ID, CumKeybindC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(ThrustKeybindC2SPacket.ID, ThrustKeybindC2SPacket.CODEC);
+
+        // --- S2C (server → client) ---
         PayloadTypeRegistry.playS2C().register(ClothingArmorVisibilityS2CPacket.ID, ClothingArmorVisibilityS2CPacket.CODEC);
 
     }
 
     public static void registerC2SPackets(){
         // --- C2S (client → server) ---
-
-        ServerPlayNetworking.registerGlobalReceiver(ButtonPacket.ID,
+        ServerPlayNetworking.registerGlobalReceiver(ButtonC2SPacket.ID,
                 (packet, context) -> Objects.requireNonNull(context.player().getServer()).execute(() -> {
                             var entity = context.player().getWorld().getEntityById(packet.entityId());
                             if (entity instanceof AbstractGirlEntity girl) {
@@ -52,7 +54,7 @@ public class PleasureCraftPackets {
                         }
                 ));
 
-        ServerPlayNetworking.registerGlobalReceiver(BonePosSyncPacket.ID,
+        ServerPlayNetworking.registerGlobalReceiver(BonePosSyncC2SPacket.ID,
                 (packet, context) -> Objects.requireNonNull(context.player().getServer()).execute(() -> {
                             var entity = context.player().getWorld().getEntityById(packet.entityId());
                             if (entity instanceof AbstractGirlEntity girl) {
@@ -62,7 +64,7 @@ public class PleasureCraftPackets {
                         }
                 ));
 
-        ServerPlayNetworking.registerGlobalReceiver(AnimationSyncPacket.ID,
+        ServerPlayNetworking.registerGlobalReceiver(AnimationSyncC2SPacket.ID,
                 (packet, context) -> Objects.requireNonNull(context.player().getServer()).execute(() -> {
                             var entity = context.player().getWorld().getEntityById(packet.entityId());
                             if (entity instanceof AbstractGirlEntity girl) {
@@ -95,7 +97,6 @@ public class PleasureCraftPackets {
 
     public static void registerS2CPackets(){
         // --- S2C (server → client) ---
-
         ClientPlayNetworking.registerGlobalReceiver(ClothingArmorVisibilityS2CPacket.ID,
                 (packet, context) -> context.client().execute(() -> {
                     var world = context.client().world;

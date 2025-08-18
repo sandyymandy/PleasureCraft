@@ -1,7 +1,7 @@
 package com.sandymandy.pleasurecraft.item;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
-import com.sandymandy.pleasurecraft.entity.PleasureCraftEntity;
+import com.sandymandy.pleasurecraft.entity.PleasureCraftEntities;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.*;
 
@@ -18,10 +18,10 @@ public class PleasureCraftItems {
 
 
     public static final Item LUCY_SPAWN_EGG = registerItem("lucy_spawn_egg",
-            setting -> new SpawnEggItem(PleasureCraftEntity.LUCY , setting));
+            setting -> new SpawnEggItem(PleasureCraftEntities.LUCY , setting));
 
     public static final Item BIA_SPAWN_EGG = registerItem("bia_spawn_egg",
-            setting -> new SpawnEggItem(PleasureCraftEntity.BIA, setting));
+            setting -> new SpawnEggItem(PleasureCraftEntities.BIA, setting));
 
 
     private static Item registerItem(String name, Function<Item.Settings, Item> factory) {

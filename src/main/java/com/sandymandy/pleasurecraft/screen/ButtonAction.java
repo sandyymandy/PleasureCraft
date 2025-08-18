@@ -1,4 +1,4 @@
-package com.sandymandy.pleasurecraft.network.girls;
+package com.sandymandy.pleasurecraft.screen;
 
 import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
 import net.minecraft.entity.player.PlayerEntity;

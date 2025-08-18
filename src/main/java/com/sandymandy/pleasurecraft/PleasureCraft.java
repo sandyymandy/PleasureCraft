@@ -1,6 +1,6 @@
 package com.sandymandy.pleasurecraft;
 
-import com.sandymandy.pleasurecraft.entity.PleasureCraftEntity;
+import com.sandymandy.pleasurecraft.entity.PleasureCraftEntities;
 import com.sandymandy.pleasurecraft.item.PleasureCraftItemGroups;
 import com.sandymandy.pleasurecraft.item.PleasureCraftItems;
 import com.sandymandy.pleasurecraft.network.PleasureCraftPackets;
@@ -30,7 +30,7 @@ public class PleasureCraft implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		PleasureCraftEntity.register();
+		PleasureCraftEntities.register();
 		PleasureCraftItemGroups.registerItemGroups();
 		PleasureCraftItems.registerModItems();
 		PleasureCraftPackets.registerPackets();
