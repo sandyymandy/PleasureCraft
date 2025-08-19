@@ -8,4 +8,6 @@ public class BiaRenderer extends AbstractGirlRenderer<BiaEntity> {
     public BiaRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new BiaModel());
     }
+
+
 }

@@ -1,11 +1,11 @@
 package com.sandymandy.pleasurecraft.util.inventory;
 
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.List;
 

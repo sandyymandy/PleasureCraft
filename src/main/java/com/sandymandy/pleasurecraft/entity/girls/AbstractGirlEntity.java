@@ -2,11 +2,13 @@ package com.sandymandy.pleasurecraft.entity.girls;
 
 import com.mojang.authlib.GameProfile;
 import com.sandymandy.pleasurecraft.PleasureCraft;
-import com.sandymandy.pleasurecraft.entity.ai.ConditionalGoal;
-import com.sandymandy.pleasurecraft.entity.ai.StopMovementGoal;
+import com.sandymandy.pleasurecraft.entity.ai.goal.ConditionalGoal;
+import com.sandymandy.pleasurecraft.entity.ai.goal.GirlAttackGoal;
+import com.sandymandy.pleasurecraft.entity.ai.goal.StopMovementGoal;
 import com.sandymandy.pleasurecraft.network.girls.AnimationSyncC2SPacket;
 import com.sandymandy.pleasurecraft.network.girls.BonePosSyncC2SPacket;
 import com.sandymandy.pleasurecraft.network.girls.ClothingArmorVisibilityS2CPacket;
+import com.sandymandy.pleasurecraft.network.girls.NextSceneAnimationC2SPacket;
 import com.sandymandy.pleasurecraft.scene.SceneStateManager;
 import com.sandymandy.pleasurecraft.screen.GirlScreenHandlerFactory;
 import com.sandymandy.pleasurecraft.util.Messages;
@@ -64,12 +66,10 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     private static final TrackedData<Boolean> STRIPPED = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> FOLLOWING = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> IN_SCENE = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> OVERRIDE_LOOP = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<String> OVERRIDE_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
-    public static final TrackedData<String> INTRO_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
-    public static final TrackedData<String> SLOW_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
-    public static final TrackedData<String> FAST_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
-    public static final TrackedData<String> CUM_ANIM = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.STRING);
+    private static final TrackedData<Boolean> OVERRIDE_LOOP = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> OVERRIDE_HOLD = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Float> SCENE_PROGRESS = DataTracker.registerData(AbstractGirlEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     private final SceneStateManager sceneManager = new SceneStateManager(this);
     public Map<String, Boolean> boneVisibility = new HashMap<>();
@@ -93,6 +93,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     public int currentRelationshipLevel;
     private String currentAnimState = "idle";
     private boolean currentLoopState = false;
+    private boolean currentHoldState = false;
 
     protected Item getTameItem() {
         return Items.DANDELION;
@@ -154,9 +155,6 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     }
 
 
-
-
-
     protected AbstractGirlEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -166,15 +164,12 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         super.initDataTracker(builder);
         builder.add(SITTING, false);
         builder.add(STRIPPED, false);
-        builder.add(FOLLOWING, false);
+        builder.add(FOLLOWING, true);
         builder.add(IN_SCENE, false);
-        builder.add(OVERRIDE_LOOP, false);
         builder.add(OVERRIDE_ANIM,"");
-        builder.add(INTRO_ANIM,"");
-        builder.add(SLOW_ANIM,"");
-        builder.add(FAST_ANIM,"");
-        builder.add(CUM_ANIM ,"");
-
+        builder.add(OVERRIDE_LOOP, false);
+        builder.add(OVERRIDE_HOLD, false);
+        builder.add(SCENE_PROGRESS,0f);
     }
 
 
@@ -188,7 +183,7 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         this.goalSelector.add(0, new SitGoal(this));
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(2, new TameableEscapeDangerGoal(1.5D, DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES));
-        this.goalSelector.add(3, new MeleeAttackGoal(this, 1.5, true));
+        this.goalSelector.add(3, new GirlAttackGoal(this, 1.5, false));
         this.goalSelector.add(4, new ConditionalGoal(new FollowOwnerGoal(this, 1.0, 10.0F, 2.0F), () -> isFollowing()));
         this.goalSelector.add(5, new TemptGoal(this, 1.25D, Ingredient.ofItems(getTameItem()), false));
         this.goalSelector.add(6, new WanderAroundGoal(this, 1.0D));
@@ -339,7 +334,21 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         return this.dataTracker.get(OVERRIDE_LOOP);
     }
 
+    public void setOverrideHold(boolean hold){
+        this.dataTracker.set(OVERRIDE_HOLD, hold);
+    }
 
+    public boolean getOverrideHold(){
+        return this.dataTracker.get(OVERRIDE_HOLD);
+    }
+
+    public void setSceneProgress(float progress){
+        this.dataTracker.set(SCENE_PROGRESS, progress);
+    }
+
+    public float getSceneProgress(){
+        return this.dataTracker.get(SCENE_PROGRESS);
+    }
 
     @Override
     public boolean isBreedingItem(ItemStack stack) {
@@ -365,7 +374,6 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
     @Override
     protected void dropInventory(ServerWorld world) {
         super.dropInventory(world); // calls standard drop logic
-
         for (ItemStack stack : this.getInventory().getItems()) {
             if (!stack.isEmpty()) {
                 this.dropStack(world,stack);
@@ -511,16 +519,23 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         String defaultAnim = getDefaultAnimation(state);
         String overrideAnim = this.getOverrideAnim();
         boolean overrideLoop = this.getOverrideLoop();
+        boolean overrideHold = this.getOverrideHold();
 
         // 1. Forced animation override
         if (overrideAnim != null && !overrideAnim.isEmpty()) {
             this.currentAnimState = overrideAnim;
             this.currentLoopState = overrideLoop;
+            this.currentHoldState = overrideHold;
+
 
             // End override if it was one-shot and finished playing
             if (!overrideLoop && (controller.getAnimationState() == AnimationController.State.STOPPED || controller.getAnimationState() == AnimationController.State.PAUSED)) {
-                if (isSceneActive()){this.getSceneManager().onAnimationFinished(this.currentAnimState);}
-                else {stopOverrideAnimations();}
+                if (isSceneActive()){
+                    ClientPlayNetworking.send(new NextSceneAnimationC2SPacket(this.getId(),this.currentAnimState));
+                }
+                else {
+                    stopOverrideAnimations();
+                }
 
             }
         }
@@ -529,9 +544,19 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
             this.currentLoopState = true;
         }
 
+        Animation.LoopType loopType;
+
+        if (this.currentLoopState) {
+            loopType = Animation.LoopType.LOOP;
+        } else if (this.currentHoldState) {
+            loopType = Animation.LoopType.HOLD_ON_LAST_FRAME;
+        } else {
+            loopType = Animation.LoopType.PLAY_ONCE;
+        }
+
 
         controller.setAnimation(RawAnimation.begin().then
-                (getAnimationPath(this.currentAnimState), this.currentLoopState ? Animation.LoopType.LOOP : Animation.LoopType.HOLD_ON_LAST_FRAME));
+                (getAnimationPath(this.currentAnimState), loopType));
         return PlayState.CONTINUE;
 
     }
@@ -546,16 +571,20 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
 
     // Call this to force an animation
 
-    public void playAnimation(String animationName, boolean loop) {
+    public void playAnimation(String animationName, boolean loop, boolean holdOnLastFrame) {
         if (!this.getWorld().isClient) { // run only on server
             this.setOverrideAnim(animationName != null ? animationName : "");
             this.setOverrideLoop(loop);
-        }else {
-            ClientPlayNetworking.send(new AnimationSyncC2SPacket(this.getId(), animationName != null ? animationName : "", loop));
+            this.setOverrideHold(holdOnLastFrame);
+        } else {
+            ClientPlayNetworking.send(new AnimationSyncC2SPacket(this.getId(),
+                    animationName != null ? animationName : "",
+                    loop,
+                    holdOnLastFrame));
         }
     }
     public void stopOverrideAnimations() {
-        ClientPlayNetworking.send(new AnimationSyncC2SPacket(this.getId(), "",false));
+        ClientPlayNetworking.send(new AnimationSyncC2SPacket(this.getId(), "",false,false));
     }
 
     @Override
@@ -825,8 +854,16 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
         return "animation." + this.getGirlID() + "." + animation;
     }
 
+
+
     public void applySkinToBone(PlayerEntity player) {
         Identifier texture;
+
+        // If the playerTexture is null then initialize it
+        if (this.playerTexture == null) this.playerTexture = new HashMap<>();
+
+        // Set the base of the player model to Steve so if there isn't a player it has a fallback
+        this.overrideBoneTexture("steve", Identifier.of(PleasureCraft.MOD_ID, "textures/player/steve.png"));
 
         if (player != null) {
             MinecraftClient client = MinecraftClient.getInstance();
@@ -837,18 +874,11 @@ public abstract class AbstractGirlEntity extends TameableEntity implements GeoEn
             // Get the skin identifier
             texture = skinProvider.getSkinTextures(profile).texture();
 
-            // Fallback to Steve if null
-            if (texture == null) {
-                texture = Identifier.of(PleasureCraft.MOD_ID, "textures/player/steve.png");
+            // if isn't null set the player texture
+            if (texture != null) {
+                this.playerTexture.put("steve", texture);
             }
-        } else {
-            texture = Identifier.of(PleasureCraft.MOD_ID, "textures/player/steve.png");
         }
-
-        // Store in the per-bone player texture map
-        if (this.playerTexture == null) this.playerTexture = new HashMap<>();
-        this.overrideBoneTexture("steve", Identifier.of(PleasureCraft.MOD_ID, "textures/player/steve.png"));
-        this.playerTexture.put("steve", texture);
     }
 
 

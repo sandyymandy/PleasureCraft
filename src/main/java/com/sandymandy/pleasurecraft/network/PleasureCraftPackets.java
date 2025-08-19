@@ -2,10 +2,7 @@ package com.sandymandy.pleasurecraft.network;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
 import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
-import com.sandymandy.pleasurecraft.network.girls.AnimationSyncC2SPacket;
-import com.sandymandy.pleasurecraft.network.girls.BonePosSyncC2SPacket;
-import com.sandymandy.pleasurecraft.network.girls.ButtonC2SPacket;
-import com.sandymandy.pleasurecraft.network.girls.ClothingArmorVisibilityS2CPacket;
+import com.sandymandy.pleasurecraft.network.girls.*;
 import com.sandymandy.pleasurecraft.network.players.CumKeybindC2SPacket;
 import com.sandymandy.pleasurecraft.network.players.ThrustKeybindC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -14,6 +11,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 
+import java.util.List;
 import java.util.Objects;
 
 public class PleasureCraftPackets {
@@ -25,6 +23,7 @@ public class PleasureCraftPackets {
         PayloadTypeRegistry.playC2S().register(AnimationSyncC2SPacket.ID, AnimationSyncC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(CumKeybindC2SPacket.ID, CumKeybindC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(ThrustKeybindC2SPacket.ID, ThrustKeybindC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(NextSceneAnimationC2SPacket.ID, NextSceneAnimationC2SPacket.CODEC);
 
         // --- S2C (server → client) ---
         PayloadTypeRegistry.playS2C().register(ClothingArmorVisibilityS2CPacket.ID, ClothingArmorVisibilityS2CPacket.CODEC);
@@ -41,10 +40,10 @@ public class PleasureCraftPackets {
                                     case "stripOrDressup" -> girl.setStripped(!girl.isStripped());
                                     case "breakUp" -> girl.breakUp(context.player());
                                     case "setBase" -> girl.setBasePosHere();
-                                    case "titjob" -> girl.getSceneManager().startScene(context.player(),"paizuri_start","paizuri_slow","paizuri_fast","paizuri_cum");
+                                    case "titjob" -> girl.getSceneManager().startScene(context.player(),"paizuri_start", List.of("paizuri_slow"),List.of("paizuri_fast"),"paizuri_cum");
                                     case "talk" -> girl.messageAsEntity(context.player(),"Hello");
-                                    case "blowjob" -> girl.getSceneManager().startScene(context.player(),"blowjob_start","blowjob_slow","blowjob_fast","blowjob_cum");
-                                    case "testAnim1" -> girl.playAnimation("downed",false);
+                                    case "blowjob" -> girl.getSceneManager().startScene(context.player(),"blowjob_start",List.of("blowjob_slow"),List.of("blowjob_fast"),"blowjob_cum");
+                                    case "testAnim1" -> girl.playAnimation("downed",false,false);
                                     case "goToBase" -> girl.teleportToBase();
                                     case "sit" -> girl.setSit(!girl.isSittingdown());
                                     case "follow" -> girl.setFollowing(!girl.isFollowing());
@@ -70,6 +69,7 @@ public class PleasureCraftPackets {
                             if (entity instanceof AbstractGirlEntity girl) {
                                 girl.setOverrideAnim(packet.animationState());
                                 girl.setOverrideLoop(packet.loopState());
+                                girl.setOverrideHold(packet.holdState());
                             }
 
                         }
@@ -90,6 +90,14 @@ public class PleasureCraftPackets {
                     var entity = context.player().getVehicle();
                     if (entity instanceof AbstractGirlEntity girl) {
                         girl.getSceneManager().setKeyHeld(packet.held());
+                    }
+                }));
+
+        ServerPlayNetworking.registerGlobalReceiver(NextSceneAnimationC2SPacket.ID,
+                (packet, context) -> Objects.requireNonNull(context.player().getServer()).execute(() -> {
+                    var entity = context.player().getWorld().getEntityById(packet.entityId());
+                    if (entity instanceof AbstractGirlEntity girl) {
+                        girl.getSceneManager().onAnimationFinished(packet.finishedAnimation());
                     }
                 }));
 

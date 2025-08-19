@@ -2,12 +2,8 @@ package com.sandymandy.pleasurecraft.client.models;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
 import com.sandymandy.pleasurecraft.entity.girls.LucyEntity;
-import com.sandymandy.pleasurecraft.util.jigglePhysics.JiggleBoneConfig;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib.renderer.GeoRenderer;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LucyModel extends AbstractGirlModel<LucyEntity> {
 
@@ -26,15 +22,6 @@ public class LucyModel extends AbstractGirlModel<LucyEntity> {
         return Identifier.of(PleasureCraft.MOD_ID, "animations/lucy.animation.json");
     }
 
-    @Override
-    protected List<JiggleBoneConfig> JIGGLE_BONES(LucyEntity lucy) {
-        List<JiggleBoneConfig> bones = new ArrayList<>(super.JIGGLE_BONES(lucy));
 
-        if(lucy.isStripped()) {
-            bones.add(new JiggleBoneConfig("boobL", 0.2, 0.3));
-            bones.add(new JiggleBoneConfig("boobR", 0.2, 0.3));
-        }
-        return bones;
-    }
 
 }

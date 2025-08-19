@@ -1,16 +1,10 @@
     package com.sandymandy.pleasurecraft.scene;
 
     import com.sandymandy.pleasurecraft.PleasureCraft;
-    import com.sandymandy.pleasurecraft.client.PleasureCraftKeybinds;
     import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
-    import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
     import net.minecraft.entity.player.PlayerEntity;
-    import net.minecraft.util.Identifier;
 
     import java.util.List;
-    import java.util.Objects;
-
-    import static com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity.*;
 
     public class SceneStateManager {
 
@@ -20,15 +14,16 @@
     private boolean inScene = false;
     private ScenePhase currentPhase = ScenePhase.NONE;
     private float sceneProgress = 0f;
+    private final float cumThreshold = 5f;
     private boolean isKeyHeld = false;
 
     // Animations for this scene
     private String animIntro;
-    private String animSlow;
-    private String animFast;
+    private List<String> animSlow;
+    private List<String> animFast;
     private String animCum;
 
-        // Progress speeds
+    // Progress speeds
     private static final float SLOW_SPEED = 0.002f;
     private static final float FAST_SPEED = 0.01f;
 
@@ -42,18 +37,17 @@
 
     public void startScene(PlayerEntity rider,
                            String introAnim,
-                           String slowAnim,
-                           String fastAnim,
+                           List<String> slowAnim,
+                           List<String> fastAnim,
                            String cumAnim) {
         if (inScene) return;
 
-//        entity.getLookControl().lookAt(rider, entity.getMaxHeadRotation() + 20, entity.getMaxLookPitchChange());
 
         // Store animations
-        entity.getDataTracker().set(INTRO_ANIM, introAnim);
-        entity.getDataTracker().set(SLOW_ANIM, slowAnim);
-        entity.getDataTracker().set(FAST_ANIM, fastAnim);
-        entity.getDataTracker().set(CUM_ANIM, cumAnim);
+        this.animIntro = introAnim;
+        this.animSlow = slowAnim;
+        this.animFast = fastAnim;
+        this.animCum = cumAnim;
 
         if (entity.isSittingdown()) {
             entity.setSit(false);
@@ -65,7 +59,7 @@
         entity.setFreeze(true);
         inScene = true;
         entity.setSceneState(true);
-        sceneProgress = 0f;
+        this.sceneProgress = 0f;
         isKeyHeld = false;
 
         onSceneStart(rider);
@@ -78,30 +72,25 @@
         inScene = false;
         entity.setFreeze(false);
         entity.setSceneState(false);
-        currentPhase = ScenePhase.NONE;
-
-        if (entity.hasPassengers()) {
-            entity.removeAllPassengers();
-        }
+        entity.setStripped(false);
     }
 
     public void onSceneStart(PlayerEntity player) {
         player.setInvisible(true);
 
-        String animIntro = entity.getDataTracker().get(INTRO_ANIM);
-        playPhase(ScenePhase.INTRO, animIntro, false);
+        playPhase(ScenePhase.INTRO, this.animIntro, false,true);
     }
 
     public void onAnimationFinished(String finishedAnim) {
 
         if (finishedAnim.equals(this.animIntro)) {
-            playPhase(ScenePhase.SLOW, this.animSlow, true);
+            playPhase(ScenePhase.SLOW, getRandomFromList(this.animSlow), true,false);
         }
         else if (finishedAnim.equals(this.animCum)) {
             stopScene();
         }
         else {
-            PleasureCraft.LOGGER.error(finishedAnim+" is not equal to " + this.animIntro + " or " + this.animSlow);
+            PleasureCraft.LOGGER.error(finishedAnim+" is not equal to " + this.animIntro + " or " + getRandomFromList(this.animSlow));
         }
 
     }
@@ -112,62 +101,48 @@
                 player.setInvisible(false);
             }
         }
+
+        if (entity.hasPassengers()) {
+            entity.removeAllPassengers();
+        }
+
+        currentPhase = ScenePhase.NONE;
+
         entity.stopOverrideAnimations();
     }
 
     public void setKeyHeld(boolean held) {
         this.isKeyHeld = held;
-        if(held){
-            entity.messageAsEntity("thrust");
-
-        }
     }
 
-    private void playPhase(ScenePhase phase, String animation, boolean loop) {
+    private void playPhase(ScenePhase phase, String animation, boolean loop, boolean holdOnLastFrame) {
         currentPhase = phase;
-        entity.playAnimation(animation, loop);
+        entity.playAnimation(animation, loop, holdOnLastFrame);
     }
 
     public void tryTriggerCum() {
-        entity.messageAsEntity("cum");
-        if (entity.isSceneActive() && sceneProgress >= 1.0f && currentPhase != ScenePhase.CUM) {
-            playPhase(ScenePhase.CUM, animCum, false);
+        if (entity.isSceneActive() && this.entity.getSceneProgress() >= cumThreshold && currentPhase != ScenePhase.CUM) {
+            entity.messageAsEntity("cum");
+            playPhase(ScenePhase.CUM, animCum, false,false);
         }
     }
 
-        private void handleKeybinds() {
-            ClientTickEvents.END_CLIENT_TICK.register(client -> {
-                if (client.player == null) return;
+    private void inScene(){
+        if (!this.entity.isSceneActive()) return;
+        PleasureCraft.LOGGER.info(this.entity.getSceneProgress()+"");
 
-                // Thrust button held
-                boolean thrustHeld = PleasureCraftKeybinds.thrustKey.isPressed();
-                setKeyHeld(thrustHeld);
+    }
 
-                // Cum button (pressed once)
-                if (PleasureCraftKeybinds.cumKey.wasPressed()) {
-                    tryTriggerCum();
-                }
-            });
-        }
-
-
+    private String getRandomFromList(List<String> list) {
+        if (list.size() == 1) return list.getFirst(); // fallback
+        int index = entity.getWorld().getRandom().nextInt(list.size());
+        return list.get(index);
+    }
 
     public void tick() {
-        handleKeybinds();
+        inScene();
 
-        if(!(Objects.equals(this.animIntro, entity.getDataTracker().get(INTRO_ANIM)) &&
-                Objects.equals(this.animSlow, entity.getDataTracker().get(SLOW_ANIM)) &&
-                Objects.equals(this.animFast, entity.getDataTracker().get(FAST_ANIM)) &&
-                Objects.equals(this.animCum, entity.getDataTracker().get(CUM_ANIM)))){
-            this.animIntro = entity.getDataTracker().get(INTRO_ANIM);
-            this.animSlow  = entity.getDataTracker().get(SLOW_ANIM);
-            this.animFast  = entity.getDataTracker().get(FAST_ANIM);
-            this.animCum   = entity.getDataTracker().get(CUM_ANIM);
-        }
-
-
-
-
+        entity.setSceneProgress(sceneProgress);
 
         entity.toggleModelBones(List.of("RightLeg", "LeftLeg", "Torso2"), entity.isSceneActive());
 
@@ -182,7 +157,6 @@
             return;
         }
 
-
         PlayerEntity player = (PlayerEntity) entity.getFirstPassenger();
         if (player != null) player.setInvisible(true);
 
@@ -191,13 +165,13 @@
             case SLOW -> {
                 sceneProgress += SLOW_SPEED;
                 if (isKeyHeld) {
-                    playPhase(ScenePhase.FAST, animFast, true);
+                    playPhase(ScenePhase.FAST, getRandomFromList(this.animFast), true,false);
                 }
             }
             case FAST -> {
                 sceneProgress += FAST_SPEED;
                 if (!isKeyHeld) {
-                    playPhase(ScenePhase.SLOW, animSlow, true);
+                    playPhase(ScenePhase.SLOW, getRandomFromList(this.animSlow), true,false);
                 }
             }
             default -> {} // INTRO and CUM are handled by onAnimationFinished

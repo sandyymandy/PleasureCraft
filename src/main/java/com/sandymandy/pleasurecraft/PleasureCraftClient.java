@@ -6,8 +6,12 @@ import com.sandymandy.pleasurecraft.client.renderers.BiaRenderer;
 import com.sandymandy.pleasurecraft.client.renderers.LucyRenderer;
 import com.sandymandy.pleasurecraft.entity.PleasureCraftEntities;
 import com.sandymandy.pleasurecraft.network.PleasureCraftPackets;
+import com.sandymandy.pleasurecraft.network.players.CumKeybindC2SPacket;
+import com.sandymandy.pleasurecraft.network.players.ThrustKeybindC2SPacket;
 import com.sandymandy.pleasurecraft.screen.client.GirlInventoryScreen;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 
@@ -24,8 +28,21 @@ public class PleasureCraftClient implements ClientModInitializer {
         EntityRendererRegistry.register(PleasureCraftEntities.BIA, BiaRenderer::new);
         PleasureCraftKeybinds.register();
         PleasureCraftPackets.registerS2CPackets();
+        handleKeybinds();
+    }
 
+    private static void handleKeybinds() {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (client.player == null) return;
 
+            // Thrust button held
+            boolean thrustHeld = PleasureCraftKeybinds.thrustKey.isPressed();
+            ClientPlayNetworking.send(new ThrustKeybindC2SPacket(thrustHeld));
+
+            // Cum button (pressed once)
+            ClientPlayNetworking.send(new CumKeybindC2SPacket(PleasureCraftKeybinds.cumKey.wasPressed()));
+
+        });
     }
 
 }

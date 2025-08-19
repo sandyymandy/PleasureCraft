@@ -1,4 +1,4 @@
-package com.sandymandy.pleasurecraft.entity.ai;
+package com.sandymandy.pleasurecraft.entity.ai.goal;
 
 import net.minecraft.entity.ai.goal.Goal;
 

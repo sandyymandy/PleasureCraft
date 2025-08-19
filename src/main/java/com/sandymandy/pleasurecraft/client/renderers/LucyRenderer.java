@@ -8,4 +8,6 @@ public class LucyRenderer extends AbstractGirlRenderer<LucyEntity> {
     public LucyRenderer(EntityRendererFactory.Context ctx) {
         super(ctx, new LucyModel());
     }
+
+
 }
