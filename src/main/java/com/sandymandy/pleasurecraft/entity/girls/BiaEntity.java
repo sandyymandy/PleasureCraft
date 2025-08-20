@@ -36,6 +36,10 @@ public class BiaEntity extends AbstractGirlEntity{
     }
 
     @Override
+    public int getSizeGUI(){return 35;}
+
+
+    @Override
     protected Map<EquipmentSlot, List<String>> getClothingBones() {
         Map<EquipmentSlot, List<String>> clothing = super.getClothingBones();
 

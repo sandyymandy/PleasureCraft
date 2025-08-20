@@ -66,6 +66,11 @@ public abstract class AbstractGirlRenderer<T extends AbstractGirlEntity> extends
     }
 
     @Override
+    public void applyRenderLayers(MatrixStack poseStack, T animatable, BakedGeoModel model, @Nullable RenderLayer renderType, VertexConsumerProvider bufferSource, @Nullable VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay, int renderColor) {
+        super.applyRenderLayers(poseStack, animatable, model, renderType, bufferSource, buffer, partialTick, packedLight, packedOverlay, renderColor);
+    }
+
+    @Override
     public void renderRecursively(MatrixStack poseStack, T animatable, GeoBone bone,
                                   RenderLayer renderType, VertexConsumerProvider bufferSource,
                                   VertexConsumer buffer, boolean isReRender,
@@ -88,9 +93,11 @@ public abstract class AbstractGirlRenderer<T extends AbstractGirlEntity> extends
         // Apply per-bone UV offset if present
         if (animatable.boneUVOffsets != null && animatable.boneUVOffsets.containsKey(bone.getName())) {
             Vec2f offset = animatable.getBoneUVOffset(bone.getName());
-            OffsetVertexConsumer offsetBuffer = new OffsetVertexConsumer();
-            offsetBuffer.setup(targetBuffer, offset.x, offset.y);
-            targetBuffer = offsetBuffer;
+            if (offset != null) {
+                OffsetVertexConsumer offsetBuffer = new OffsetVertexConsumer();
+                offsetBuffer.setup(targetBuffer, offset.x, offset.y);
+                targetBuffer = offsetBuffer;
+            }
         }
 
         // Call the super method with the final buffer (possibly UV offset + texture override)

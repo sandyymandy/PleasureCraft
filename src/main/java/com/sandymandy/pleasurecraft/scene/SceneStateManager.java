@@ -122,7 +122,6 @@
 
     public void tryTriggerCum() {
         if (entity.isSceneActive() && this.entity.getSceneProgress() >= cumThreshold && currentPhase != ScenePhase.CUM) {
-            entity.messageAsEntity("cum");
             playPhase(ScenePhase.CUM, animCum, false,false);
         }
     }

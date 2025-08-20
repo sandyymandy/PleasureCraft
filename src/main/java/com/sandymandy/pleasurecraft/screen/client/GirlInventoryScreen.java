@@ -7,6 +7,7 @@ import com.sandymandy.pleasurecraft.screen.ButtonAction;
 import com.sandymandy.pleasurecraft.screen.ButtonRegistry;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -47,8 +48,10 @@ public class GirlInventoryScreen extends HandledScreen<GirlInventoryScreenHandle
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int centerX = (width - GUI_WIDTH) / 2;
         int centerY = (height - GUI_HEIGHT) / 2;
-
+        int i = this.x;
+        int j = this.y;
         context.drawTexture(RenderLayer::getGuiTextured,TEXTURE, centerX, centerY, 0, 0, GUI_WIDTH, GUI_HEIGHT, GUI_WIDTH, GUI_HEIGHT);
+        InventoryScreen.drawEntity(context, i + 26, j + 8, i + 75, j + 78, this.girl.getSizeGUI(), this.girl.getYAxisGUI(), mouseX, mouseY, this.girl);
     }
 
     @Override

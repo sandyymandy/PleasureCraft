@@ -34,6 +34,12 @@ public class LucyEntity extends AbstractGirlEntity{
     }
 
     @Override
+    public int getSizeGUI(){return 29;}
+
+    @Override
+    public float getYAxisGUI(){return 0.0525F;}
+
+    @Override
     protected Map<EquipmentSlot, List<String>> getClothingBones() {
         return super.getClothingBones();
     }

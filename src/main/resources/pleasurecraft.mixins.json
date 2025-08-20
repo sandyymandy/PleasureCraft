@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.sandymandy.pleasurecraft.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

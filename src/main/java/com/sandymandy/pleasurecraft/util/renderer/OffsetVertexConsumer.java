@@ -11,7 +11,11 @@ public class OffsetVertexConsumer implements VertexConsumer {
     private float vOffset;
 
     public void setup(VertexConsumer delegate, float uOffset, float vOffset) {
-        this.delegate = delegate instanceof OffsetVertexConsumer off ? off.getDelegate() : delegate;
+        if (delegate instanceof OffsetVertexConsumer offsetVertexConsumer) {
+            this.delegate = offsetVertexConsumer.getDelegate();
+        } else {
+            this.delegate = delegate;
+        }
         this.uOffset = uOffset;
         this.vOffset = vOffset;
     }
@@ -34,6 +38,7 @@ public class OffsetVertexConsumer implements VertexConsumer {
 
     @Override
     public VertexConsumer texture(float u, float v) {
+        if (delegate == null) return this;
         // Apply the offset here
         return delegate.texture(u + uOffset, v + vOffset);
     }
