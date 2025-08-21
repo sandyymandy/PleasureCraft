@@ -1,38 +1,45 @@
-package com.sandymandy.pleasurecraft.network;
+package com.sandymandy.pleasurecraft.networking;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
 import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
-import com.sandymandy.pleasurecraft.network.girls.*;
-import com.sandymandy.pleasurecraft.network.players.CumKeybindC2SPacket;
-import com.sandymandy.pleasurecraft.network.players.ThrustKeybindC2SPacket;
+import com.sandymandy.pleasurecraft.networking.C2S.*;
+import com.sandymandy.pleasurecraft.networking.S2C.ClothingArmorVisibilityS2CPacket;
+import com.sandymandy.pleasurecraft.networking.S2C.SceneOptionsS2CPacket;
+import com.sandymandy.pleasurecraft.screen.client.GirlSceneScreen;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 
-import java.util.List;
 import java.util.Objects;
 
 public class PleasureCraftPackets {
 
     public static void registerPackets(){
         // --- C2S (client → server) ---
-        PayloadTypeRegistry.playC2S().register(ButtonC2SPacket.ID, ButtonC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(InventoryButtonC2SPacket.ID, InventoryButtonC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(BonePosSyncC2SPacket.ID, BonePosSyncC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(AnimationSyncC2SPacket.ID, AnimationSyncC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(CumKeybindC2SPacket.ID, CumKeybindC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(ThrustKeybindC2SPacket.ID, ThrustKeybindC2SPacket.CODEC);
         PayloadTypeRegistry.playC2S().register(NextSceneAnimationC2SPacket.ID, NextSceneAnimationC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(StartSceneC2SPacket.ID, StartSceneC2SPacket.CODEC);
+        PayloadTypeRegistry.playC2S().register(MovementLockStateC2SPacket.ID, MovementLockStateC2SPacket.CODEC);
+
+
 
         // --- S2C (server → client) ---
         PayloadTypeRegistry.playS2C().register(ClothingArmorVisibilityS2CPacket.ID, ClothingArmorVisibilityS2CPacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(SceneOptionsS2CPacket.ID, SceneOptionsS2CPacket.CODEC);
+
 
     }
 
     public static void registerC2SPackets(){
         // --- C2S (client → server) ---
-        ServerPlayNetworking.registerGlobalReceiver(ButtonC2SPacket.ID,
+        ServerPlayNetworking.registerGlobalReceiver(InventoryButtonC2SPacket.ID,
                 (packet, context) -> Objects.requireNonNull(context.player().getServer()).execute(() -> {
                             var entity = context.player().getWorld().getEntityById(packet.entityId());
                             if (entity instanceof AbstractGirlEntity girl) {
@@ -40,9 +47,7 @@ public class PleasureCraftPackets {
                                     case "stripOrDressup" -> girl.setStripped(!girl.isStripped());
                                     case "breakUp" -> girl.breakUp(context.player());
                                     case "setBase" -> girl.setBasePosHere();
-                                    case "titjob" -> girl.getSceneManager().startScene(context.player(),"paizuri_start", List.of("paizuri_slow"),List.of("paizuri_fast"),"paizuri_cum");
-                                    case "talk" -> girl.messageAsEntity(context.player(),"Hello");
-                                    case "blowjob" -> girl.getSceneManager().startScene(context.player(),"blowjob_start",List.of("blowjob_slow"),List.of("blowjob_fast"),"blowjob_cum");
+                                    case "talk" -> ServerPlayNetworking.send(context.player(), new SceneOptionsS2CPacket(girl.getId(), girl.getSceneOptions()));
                                     case "testAnim1" -> girl.playAnimation("downed",false,false);
                                     case "goToBase" -> girl.teleportToBase();
                                     case "sit" -> girl.setSit(!girl.isSittingdown());
@@ -101,6 +106,22 @@ public class PleasureCraftPackets {
                     }
                 }));
 
+        ServerPlayNetworking.registerGlobalReceiver(StartSceneC2SPacket.ID,
+                (packet, context) -> Objects.requireNonNull(context.player().getServer()).execute(() -> {
+                    var entity = context.player().getWorld().getEntityById(packet.entityId());
+                    if (entity instanceof AbstractGirlEntity girl) {
+                        girl.getSceneManager().startScene(context.player(), packet.introAnim(), packet.slowAnim(),packet.fastAnim(),packet.cumAnim());
+                    }
+                }));
+
+        ServerPlayNetworking.registerGlobalReceiver(MovementLockStateC2SPacket.ID,
+                (packet, context) -> Objects.requireNonNull(context.player().getServer()).execute(() -> {
+                    var entity = context.player().getWorld().getEntityById(packet.entityId());
+                    if (entity instanceof AbstractGirlEntity girl) {
+                        girl.setMovementLockedState(packet.data());
+                    }
+                }));
+
     }
 
     public static void registerS2CPackets(){
@@ -121,6 +142,12 @@ public class PleasureCraftPackets {
                         girl.applyClothingAndArmor();
                     }
                 }));
+
+        ClientPlayNetworking.registerGlobalReceiver(SceneOptionsS2CPacket.ID, (packet, context) -> {
+            context.client().execute(() -> {
+                MinecraftClient.getInstance().setScreen(new GirlSceneScreen(packet.entityId(), packet.options()));
+            });
+        });
 
     }
 

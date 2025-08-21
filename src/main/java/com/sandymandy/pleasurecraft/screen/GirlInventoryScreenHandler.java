@@ -49,7 +49,7 @@ public class GirlInventoryScreenHandler extends ScreenHandler {
     // This constructor gets called from the BlockEntity on the server without calling the other constructor first, the server knows the inventory of the container
     // and can therefore directly provide it as an argument. This inventory will then be synced to the client.
     public GirlInventoryScreenHandler(int syncId, PlayerInventory playerInventory, int girlId) {
-        super(PleasureCraft.GIRL_SCREEN_HANDLER, syncId);
+        super(PleasureCraft.GIRL_INVENTORY_SCREEN_HANDLER, syncId);
         PlayerEntity player = playerInventory.player;
         World world = player.getWorld();
 
@@ -120,7 +120,7 @@ public class GirlInventoryScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUse(player);
+        return inventory.canPlayerUse(player);
     }
 
     @Override

@@ -129,7 +129,6 @@
     private void inScene(){
         if (!this.entity.isSceneActive()) return;
         PleasureCraft.LOGGER.info(this.entity.getSceneProgress()+"");
-
     }
 
     private String getRandomFromList(List<String> list) {

@@ -1,5 +1,6 @@
 package com.sandymandy.pleasurecraft.entity.girls;
 
+import com.sandymandy.pleasurecraft.scene.SceneOption;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -37,6 +38,15 @@ public class BiaEntity extends AbstractGirlEntity{
 
     @Override
     public int getSizeGUI(){return 35;}
+
+    @Override
+    public List<SceneOption> getSceneOptions() {
+        return List.of(
+                new SceneOption("Doggy",
+                        "prone_doggy_intro", List.of("prone_doggy_soft"),List.of("prone_doggy_hard1","prone_doggy_hard2","prone_doggy_hard3"),"prone_doggy_cum")
+        );
+
+    }
 
 
     @Override

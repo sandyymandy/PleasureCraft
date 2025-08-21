@@ -10,10 +10,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
-public class GirlScreenHandlerFactory implements ExtendedScreenHandlerFactory {
+public class GirlInventoryScreenHandlerFactory implements ExtendedScreenHandlerFactory {
     private final AbstractGirlEntity girl;
 
-    public GirlScreenHandlerFactory(AbstractGirlEntity girl) {
+    public GirlInventoryScreenHandlerFactory(AbstractGirlEntity girl) {
         this.girl = girl;
     }
 
@@ -25,7 +25,7 @@ public class GirlScreenHandlerFactory implements ExtendedScreenHandlerFactory {
 
     @Override
     public Text getDisplayName() {
-        return Text.translatable("screen.pleasurecraft.girl_inventory");
+        return Text.literal("");
     }
 
     // Called on the client

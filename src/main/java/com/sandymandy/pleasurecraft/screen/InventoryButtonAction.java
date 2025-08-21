@@ -6,4 +6,4 @@ import net.minecraft.text.Text;
 
 import java.util.function.BiConsumer;
 
-public record ButtonAction(Text label, BiConsumer<AbstractGirlEntity, PlayerEntity> action) {}
+public record InventoryButtonAction(Text label, BiConsumer<AbstractGirlEntity, PlayerEntity> action) {}

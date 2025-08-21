@@ -2,9 +2,11 @@ package com.sandymandy.pleasurecraft.screen.client;
 
 import com.sandymandy.pleasurecraft.PleasureCraft;
 import com.sandymandy.pleasurecraft.entity.girls.AbstractGirlEntity;
+import com.sandymandy.pleasurecraft.networking.C2S.MovementLockStateC2SPacket;
 import com.sandymandy.pleasurecraft.screen.GirlInventoryScreenHandler;
-import com.sandymandy.pleasurecraft.screen.ButtonAction;
-import com.sandymandy.pleasurecraft.screen.ButtonRegistry;
+import com.sandymandy.pleasurecraft.screen.InventoryButtonAction;
+import com.sandymandy.pleasurecraft.screen.InventoryButtonRegistry;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -34,8 +36,10 @@ public class GirlInventoryScreen extends HandledScreen<GirlInventoryScreenHandle
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        int alpha = 120; // adjust blur opacity
+        context.fillGradient(alpha, 0, 0, this.height, this.width, 0xAA000000, 0xAA000000);
         super.render(context, mouseX, mouseY, delta);
-        drawMouseoverTooltip(context,mouseX,mouseY);
+//        drawMouseoverTooltip(context,mouseX,mouseY);
 
     }
 
@@ -55,6 +59,12 @@ public class GirlInventoryScreen extends HandledScreen<GirlInventoryScreenHandle
     }
 
     @Override
+    public void close() {
+        super.close();
+        ClientPlayNetworking.send(new MovementLockStateC2SPacket(this.girl.getId(),false));
+    }
+
+    @Override
     protected void init() {
         super.init();
         int centerX = (this.width - GUI_WIDTH) / 2;
@@ -70,8 +80,8 @@ public class GirlInventoryScreen extends HandledScreen<GirlInventoryScreenHandle
         int startY = centerY + 15;
 
         if (girl.isTamed()){
-            for (int i = 0; i < ButtonRegistry.BUTTONS_LEFT.size(); i++) {
-                ButtonAction action = ButtonRegistry.BUTTONS_LEFT.get(i);
+            for (int i = 0; i < InventoryButtonRegistry.BUTTONS_LEFT.size(); i++) {
+                InventoryButtonAction action = InventoryButtonRegistry.BUTTONS_LEFT.get(i);
                 int y = startY + i * (buttonHeight + paddingY);
                 Text dynamicLabel = action.label();
 
@@ -85,13 +95,14 @@ public class GirlInventoryScreen extends HandledScreen<GirlInventoryScreenHandle
                         if (girl != null && client != null && player != null) {
                             action.action().accept(girl, player);  // Run the button's logic
                             this.client.setScreen(null);
+                            ClientPlayNetworking.send(new MovementLockStateC2SPacket(this.girl.getId(),false));
                         }
                     }
                 ).dimensions(startX, y, buttonWidth, buttonHeight).build());
             }
 
-            for (int i = 0; i < ButtonRegistry.BUTTONS_RIGHT.size(); i++) {
-                ButtonAction action = ButtonRegistry.BUTTONS_RIGHT.get(i);
+            for (int i = 0; i < InventoryButtonRegistry.BUTTONS_RIGHT.size(); i++) {
+                InventoryButtonAction action = InventoryButtonRegistry.BUTTONS_RIGHT.get(i);
                 int y = startY + i * (buttonHeight + paddingY);
                 Text dynamicLabel = action.label();
 
